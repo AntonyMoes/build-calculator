@@ -47,8 +47,9 @@ function validate(tokens: Token[]): { tokenIndex: number } | undefined {
         const token = validationTokens[i];
         const nextToken = validationTokens[i + 1];
         if (!allowedCombinations[token.kind].includes(nextToken.kind)) {
+            const index = i == validationTokens.length - 2 ? i - 1 : i;
             return {
-                tokenIndex: i,
+                tokenIndex: index,
             }
         }
 

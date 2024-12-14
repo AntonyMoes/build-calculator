@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // import HelloWorld from './components/HelloWorld.vue'
 // import TheWelcome from './components/TheWelcome.vue'
-import TestCalculator from "@/components/TestCalculator.vue";
+import Calculator from "@/components/calculator/Calculator.vue";
 </script>
 
 <template>
@@ -15,7 +15,7 @@ import TestCalculator from "@/components/TestCalculator.vue";
 
   <main>
 <!--    <TheWelcome />-->
-    <TestCalculator />
+    <Calculator />
   </main>
 </template>
 

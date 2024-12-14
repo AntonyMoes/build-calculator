@@ -8,6 +8,8 @@ class ParseCharacterResult {
     startNewToken: boolean = true;
 }
 
+// TODO: handle negative numbers
+
 function tokenize(input: string): Token[] {
     let currentToken = "";
     let tokens: Token[] = [];
