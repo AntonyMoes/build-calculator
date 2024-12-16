@@ -70,7 +70,9 @@ function createNode(stack: TreeToken[], variables: string[]): Node {
             const left = createNode(stack, variables);
             return new OperatorNode(left, right, token.operator);
         case "variable":
-            variables.push(token.value);
+            if (!variables.includes(token.value)) {
+                variables.push(token.value);
+            }
             return new VariableNode(token.value);
         case "constant":
             return new ConstantNode(token.value);
@@ -89,7 +91,7 @@ class CalculationTree {
 
         const variables: string[] = [];
         this.root = createNode(copy, variables);
-        this.variables = variables;
+        this.variables = variables.reverse();
     }
 
     calculate(dictionary: VariableDictionary) {

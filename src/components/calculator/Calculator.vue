@@ -2,6 +2,7 @@
 import {computed, type Ref, ref} from "vue";
 import {type Token} from "@/calculator/types.ts";
 import {calculator, tokenToString} from "@/components/calculator/calculator.ts";
+import Variable from "@/components/calculator/Variable.vue";
 
 function tokenizationToString(tokenization: Token[]): string {
   return tokenization.map(tokenToString).join(",");
@@ -15,9 +16,11 @@ const debugInfo = computed(() => {
       : error.value;
 
   const tokenizationString = tokenization.value !== undefined ? tokenizationToString(tokenization.value) : "";
-  return `${tokenizationString} | ${errorString}`;
+  const variableString = tree.value !== undefined ? tree.value.variables.toString() : "";
+  return `${tokenizationString} | ${variableString} | ${errorString}`;
 })
 
+const map = new Map<string, number>();
 const result: Ref<number | undefined> = ref(undefined)
 
 function calculate() {
@@ -25,64 +28,28 @@ function calculate() {
     return;
   }
 
-  result.value = tree.value.calculate(new Map<string, number>());
+  result.value = tree.value.calculate(map);
 }
 
 function clearResult() {
   result.value = undefined;
 }
 
-//
-// const input = ref("");
-// const tokenizeError: Ref<string|undefined> = ref("");
-// const tokenizedString: Ref<Token[]> = ref([]);
-//
-// function tokenToString(token: Token): string {
-//   switch (token.kind) {
-//     case "openParenthesis":
-//       return Parenthesis.Open;
-//     case "operator":
-//       return token.operator;
-//     case "variable":
-//       return token.value;
-//     case "constant":
-//       return token.value.toString();
-//     case "closeParenthesis":
-//       return Parenthesis.Close;
-//   }
-// }
-//
-//
-// function tokenizeAndGetResult() : string {
-//   let tokenization: Token[] = [];
-//   try {
-//     tokenizedString.value = tokenize(input.value);
-//     tokenizeError.value = undefined;
-//   } catch (e) {
-//     const parseError = e as ParseError;
-//     tokenizeError.value = undefined;
-//   }
-//
-//   const tokenizationString = tokenizationToString(tokenization);
-//   const validationError = validate(tokenization);
-//   const validationResultString = validationError === undefined
-//       ? "OK"
-//       : `Error in token #${validationError.tokenIndex}: ${tokenToString(tokenization[validationError.tokenIndex])}`;
-//
-//   let reversedTokens: TreeToken[] = [];
-//   if (validationError === undefined) {
-//     reversedTokens = toReversePolishNotation(tokenization);
-//   }
-//   const reversedString = tokenizationToString(reversedTokens);
-//
-//   return `${tokenizationString} | ${validationResultString}\n${reversedString}`;
-// }
-//
-// function logResult() {
-//   console.log(tokenizeAndGetResult());
-// }
-//
-// const handledInput = computed(() => tokenizeAndGetResult());
+const variables = computed(() => {
+  if (tree.value === undefined) {
+    return [];
+  }
+
+  return tree.value.variables.map(variable => {
+    return {
+      name: variable,
+      setValue: (value: number) => {
+        map.set(variable, value);
+        console.log(`${variable}: ${value}`);
+      }
+    }
+  });
+})
 
 </script>
 
@@ -94,10 +61,24 @@ function clearResult() {
   </div>
   <div>
     <input type="button" value="Click!" v-on:click="calculate"></input>
-    <p>{{result}}</p>
+    <p>{{ result }}</p>
+  </div>
+
+  <!--  :name="variable.name"-->
+  <div class="variable-container">
+    <Variable
+        v-for="variable in variables"
+        @change="variable.setValue"
+    >
+      <template #name>{{ variable.name }}</template>
+    </Variable>
   </div>
 </template>
 
 <style scoped>
-
+.variable-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
 </style>
