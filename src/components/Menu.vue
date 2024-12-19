@@ -11,17 +11,14 @@ import router from "@/router";
       {{ route.name }}
     </RouterLink>
   </div>
-
-  <!--Shit to fix grid-->
-  <div></div>
 </template>
 
 <style scoped>
 /* The side navigation menu */
 .menu {
   background-color: #444444;
-  position: fixed;
-  height: 100%;
+  position: sticky;
+  min-height: 100vh;
   overflow: auto;
 }
 
