@@ -54,24 +54,26 @@ const variables = computed(() => {
 </script>
 
 <template>
-  <div>
-    <input v-model="input" v-on:input="clearResult">
-    <p>{{ input }}</p>
-    <p>{{ debugInfo }}</p>
-  </div>
-  <div>
-    <input type="button" value="Click!" v-on:click="calculate"></input>
-    <p>{{ result }}</p>
-  </div>
+  <div class="calculator">
+    <div>
+      <input v-model="input" v-on:input="clearResult">
+      <p>{{ input }}</p>
+      <p>{{ debugInfo }}</p>
+    </div>
+    <div>
+      <input type="button" value="Click!" v-on:click="calculate"></input>
+      <p>{{ result }}</p>
+    </div>
 
-  <!--  :name="variable.name"-->
-  <div class="variable-container">
-    <Variable
-        v-for="variable in variables"
-        @change="variable.setValue"
-    >
-      <template #name>{{ variable.name }}</template>
-    </Variable>
+    <!--  :name="variable.name"-->
+    <div class="variable-container">
+      <Variable
+          v-for="variable in variables"
+          @change="variable.setValue"
+      >
+        <template #name>{{ variable.name }}</template>
+      </Variable>
+    </div>
   </div>
 </template>
 
