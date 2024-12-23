@@ -23,22 +23,18 @@ function tokenToString(token: Token): string {
 
 function calculator() {
     const input = ref("");
-    // const tokenization: Ref<Token[]> = ref([]);
-    // const tree: Ref<CalculationTree | undefined> = ref(undefined);
     const error: Ref<string | undefined> = ref(undefined);
     const tokenization = computed(() => getTokenization(input.value));
     const tree = computed(() => getTree(tokenization.value, error.value));
 
     function getTokenization(input: string): Token[] | undefined {
-        let tokenization: Token[];
-        try {
-            tokenization = tokenize(input);
-        } catch (e) {
-            const parseError = e as ParseError;
-            error.value = parseError.toString();
+        let tokenizationOrError = tokenize(input);
+        if (typeof tokenizationOrError === "string") {
+            error.value = tokenizationOrError;
             return undefined;
         }
 
+        const tokenization = tokenizationOrError;
         const validationError = validate(tokenization);
         if (validationError !== undefined) {
             error.value = `Error in token #${validationError.tokenIndex}: ${tokenToString(tokenization[validationError.tokenIndex])}`;

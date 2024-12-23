@@ -10,7 +10,7 @@ class ParseCharacterResult {
 
 // TODO: handle negative numbers
 
-function tokenize(input: string): Token[] {
+function tokenize(input: string): Token[] | string {
     let currentToken = "";
     let tokens: Token[] = [];
 
@@ -18,7 +18,7 @@ function tokenize(input: string): Token[] {
         const currentCharacter = i < input.length ? input[i] : undefined;
         const parseResult = parseCharacter(currentCharacter, currentToken);
         if (parseResult.error) {
-            throw new ParseError(`Could not parse ${currentToken}`);
+            return `Could not parse ${currentToken}`;
         }
 
         if (parseResult.newTokens.length > 0) {

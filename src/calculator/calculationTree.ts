@@ -79,7 +79,7 @@ function createNode(stack: TreeToken[], variables: string[]): Node {
     }
 }
 
-class CalculationTree {
+export class CalculationTree {
     root: Node
     variables: string[]
 
@@ -98,5 +98,3 @@ class CalculationTree {
         return this.root.calculate(dictionary);
     }
 }
-
-export {CalculationTree};

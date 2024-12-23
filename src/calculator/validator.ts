@@ -28,7 +28,7 @@ interface EndToken {
 
 type ValidationToken = Token | StartToken | EndToken;
 
-function validate(tokens: Token[]): { tokenIndex: number } | undefined {
+export function validate(tokens: Token[]): { tokenIndex: number } | undefined {
     const startToken: StartToken = {
         kind: "start",
     };
@@ -71,5 +71,3 @@ function validate(tokens: Token[]): { tokenIndex: number } | undefined {
 
     return undefined;
 }
-
-export { validate };

@@ -24,7 +24,7 @@ interface StackOperator {
 }
 
 
-function toReversePolishNotation(tokens: Token[]): TreeToken[] {
+export function toReversePolishNotation(tokens: Token[]): TreeToken[] {
     const result: TreeToken[] = [];
     const operatorStack: StackOperator[] = [];
     let additionalPriority = 0;
@@ -59,5 +59,3 @@ function toReversePolishNotation(tokens: Token[]): TreeToken[] {
 
     return result;
 }
-
-export {toReversePolishNotation};

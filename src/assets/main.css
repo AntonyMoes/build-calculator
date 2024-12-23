@@ -24,3 +24,8 @@ input::-webkit-inner-spin-button {
 input[type="number"] {
   -moz-appearance: textfield;
 }
+
+input.disabled {
+    color: var(--vt-c-text-dark-2);
+    pointer-events: none;
+}

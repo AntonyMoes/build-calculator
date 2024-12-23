@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import SettingsGroup from "@/components/settings/common/SettingsGroup.vue";
-import {createId, model} from "@/model.ts";
+import {createId, model} from "@/model/model.ts";
 import Stat from "@/components/settings/stats/Stat.vue";
 
 function add() {
@@ -36,7 +36,6 @@ function remove(value: string) {
             v-for="stat in model.stats"
             :key="stat.id"
             :model-value="stat"
-            :validate-func="validateStatName"
             @remove="remove"
         />
       </template>

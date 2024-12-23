@@ -1,4 +1,6 @@
 import {reactive} from "vue";
+import {parseAndValidate} from "@/calculator/utils.ts";
+import type {TreeToken} from "@/calculator/types.ts";
 
 export interface Stat {
     id: number;
@@ -8,11 +10,14 @@ export interface Stat {
 }
 
 export interface TargetStat {
+    id: number;
     name: string;
     formula: string;
+    tokenization: TreeToken[];
 }
 
 export interface EquipmentType {
+    id: number;
     name: string;
 }
 
@@ -27,6 +32,7 @@ export interface EquipmentSlot {
 }
 
 export interface EquipmentGroup {
+    id: number;
     name: string;
     equipment: EquipmentType[];
 }
@@ -73,10 +79,4 @@ export function createId(): number {
     const id = model.nextId;
     model.nextId += 1;
     return id;
-}
-
-export function validateStatName(newValue: string): string | undefined {
-    return model.stats.find(stat => stat.name === newValue) !== undefined || newValue === ""
-        ? `The name is not unique: ${newValue}`
-        : undefined;
 }
