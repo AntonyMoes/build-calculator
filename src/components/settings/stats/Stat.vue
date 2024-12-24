@@ -37,7 +37,7 @@ function validate() {
           class="stat-block"
           type="text"
           v-model="name"
-          @input="validate()"
+          @input="validate"
       />
       <div class="stat-block">
         <p>Min: </p>
@@ -45,13 +45,13 @@ function validate() {
             class="stat-item"
             type="checkbox"
             v-model="minValue.toggle.value"
-            @change="validate()"
+            @change="validate"
         />
         <input
             class="stat-item"
             type="number"
             v-model.number="minValue.value.value"
-            @input="validate()"
+            @input="validate"
             :class="{ disabled: !minValue.toggle.value }"
             :disabled="!minValue.toggle.value"
         />
@@ -62,13 +62,13 @@ function validate() {
             class="stat-item"
             type="checkbox"
             v-model="maxValue.toggle.value"
-            @change="validate()"
+            @change="validate"
         />
         <input
             class="stat-item"
             type="number"
             v-model.number="maxValue.value.value"
-            @input="validate()"
+            @input="validate"
             :class="{ disabled: !maxValue.toggle.value }"
             :disabled="!maxValue.toggle.value"
         />

@@ -12,7 +12,7 @@ function add() {
   model.equipmentGroups.push({
     id: createId(),
     name: newName,
-    equipment: []
+    equipmentTypeIds: []
   })
 }
 

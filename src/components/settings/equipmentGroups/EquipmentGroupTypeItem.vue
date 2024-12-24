@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import SettingsCard from "@/components/settings/common/SettingsCard.vue";
-import {model} from "@/model/model.ts";
-import {ref} from "vue";
+import {type EquipmentGroup, model} from "@/model/model.ts";
+import {getEquipmentType} from "@/model/getters.ts";
+import {computed} from "vue";
 
 const props = defineProps<{
-  selected: string;
   index: number;
+  parentModel: EquipmentGroup;
 }>();
 
 defineEmits<{
@@ -13,22 +14,25 @@ defineEmits<{
   (name: "select", index: number, value: string): void
 }>();
 
-const selectedRef = ref(props.selected);
+const name = computed(() => getEquipmentType(props.parentModel.equipmentTypeIds[props.index])!.name);
 
+function nameFromEvent(event: Event) {
+  return (event.target as unknown as {value: string}).value;
+}
 </script>
 
 <template>
-  <SettingsCard @remove="$emit('remove', index)" :errors="errors">
+  <SettingsCard @remove="$emit('remove', index)">
     <template #content>
       <select
           class="equipment-group-type-item-block"
-          v-model="selectedRef"
-          @change="$emit('select', index, selectedRef)"
+          :value="name"
+          @change="$emit('select', index, nameFromEvent($event))"
       >
         <option disabled value="">Select type</option>
         <option
             v-for="type in model.equipmentTypes"
-            :id="type.id"
+            :key="type.id"
         >
           {{ type.name }}
         </option>

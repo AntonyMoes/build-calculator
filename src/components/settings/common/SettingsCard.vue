@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import RemoveButton from "@/components/common/RemoveButton.vue";
+import ErrorsBlock from "@/components/common/ErrorsBlock.vue";
+
 defineProps<{
-  // error: string | undefined;
-  errors: string[];
+  errors?: string[];
 }>();
 
 defineEmits<{
@@ -12,20 +14,8 @@ defineEmits<{
 <template>
   <div class="settings-card">
     <slot name="content"/>
-
-<!--        v-if="error !== undefined"-->
-    <p
-        v-for="error in errors"
-        class="settings-card-block settings-card-error"
-    >
-      {{ error }}
-    </p>
-    <input
-        class="settings-card-block settings-card-remove"
-        type="button"
-        value="-"
-        @click="$emit('remove')"
-    />
+    <ErrorsBlock v-if="errors !== undefined" :errors="errors"/>
+    <RemoveButton class="settings-card-block" @remove="$emit('remove')"/>
   </div>
 </template>
 
@@ -39,12 +29,5 @@ defineEmits<{
 .settings-card-block {
   display: block;
   margin-top: 5px;
-}
-
-.settings-card-error {
-  color: #b32f30;
-}
-
-.settings-card-remove {
 }
 </style>

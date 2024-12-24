@@ -16,19 +16,19 @@ const errors = ref<string[]>([]);
 
 function addItem() {
   if (model.equipmentTypes.length === 0) {
+    alert("No equipment type to add.");
     return;
   }
 
-  groupModel.value.equipment.push(model.equipmentTypes[0]);
+  groupModel.value.equipmentTypeIds.push(model.equipmentTypes[0].id);
 }
 
 function removeItem(index: number) {
-  groupModel.value.equipment.splice(index, 1);
+  groupModel.value.equipmentTypeIds.splice(index, 1);
 }
 
 function select(index: number, value: string) {
-  console.log(`select ${index} + ${value}`);
-  groupModel.value.equipment[index] = model.equipmentTypes.find(type => type.name === value)!;
+  groupModel.value.equipmentTypeIds[index] = model.equipmentTypes.find(type => type.name === value)!.id;
 }
 
 function validate() {
@@ -48,20 +48,20 @@ function validate() {
           class="equipment-group-block"
           type="text"
           v-model="name"
-          @input="validate()"
+          @input="validate"
       />
 
       <div class="equipment-group-block equipment-type-container">
         <EquipmentGroupTypeItem
-            v-for="[index, type] of groupModel.equipment.entries()"
-            :key="type.id"
+            v-for="[index, typeId] of groupModel.equipmentTypeIds.entries()"
+            :key="typeId"
             :index="index"
-            :selected="type.name"
+            :parent-model="groupModel"
             @select="select"
             @remove="removeItem"
         />
 
-        <input type="button" value="Add" v-on:click="addItem()">
+        <input type="button" value="Add" v-on:click="addItem">
       </div>
     </template>
   </SettingsCard>

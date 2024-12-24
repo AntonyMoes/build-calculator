@@ -36,7 +36,7 @@ async function onLoadFileSelected() {
 </script>
 
 <template>
-  <div class="settings" :key="rerenderKey.key.value">
+  <div class="page-container settings" :key="rerenderKey.key.value">
     <Stats/>
     <TargetStats/>
     <EquipmentTypes/>

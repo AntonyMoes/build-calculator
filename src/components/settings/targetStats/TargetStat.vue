@@ -33,7 +33,7 @@ function validate() {
           class="target-stat-block"
           type="text"
           v-model="name"
-          @input="validate()"
+          @input="validate"
       />
       <div class="stat-block">
         <p>Formula</p>
@@ -41,7 +41,7 @@ function validate() {
             class="target-stat-item"
             type="text"
             v-model="formula"
-            @input="validate()"
+            @input="validate"
         />
       </div>
     </template>

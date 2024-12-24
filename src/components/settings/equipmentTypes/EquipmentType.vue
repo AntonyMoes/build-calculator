@@ -30,7 +30,7 @@ function validate() {
           class="equipment-type-block"
           type="text"
           v-model="name"
-          @input="validate()"
+          @input="validate"
       />
     </template>
   </SettingsCard>

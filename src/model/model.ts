@@ -1,9 +1,10 @@
 import {reactive} from "vue";
-import {parseAndValidate} from "@/calculator/utils.ts";
 import type {TreeToken} from "@/calculator/types.ts";
 
+export type StatId = number;
+
 export interface Stat {
-    id: number;
+    id: StatId;
     name: string;
     minValue: number | undefined;
     maxValue: number | undefined;
@@ -16,12 +17,15 @@ export interface TargetStat {
     tokenization: TreeToken[];
 }
 
+export type EquipmentTypeId = number;
+
 export interface EquipmentType {
-    id: number;
+    id: EquipmentTypeId;
     name: string;
 }
 
 export interface Equipment {
+    id: number;
     name: string;
     stats: StatValue[];
 }
@@ -34,7 +38,7 @@ export interface EquipmentSlot {
 export interface EquipmentGroup {
     id: number;
     name: string;
-    equipment: EquipmentType[];
+    equipmentTypeIds: number[];
 }
 
 export interface CharacterEquipmentGroup {
@@ -43,7 +47,8 @@ export interface CharacterEquipmentGroup {
 }
 
 export interface StatValue {
-    stat: Stat;
+    id: number;
+    statId: StatId;
     value: number;
 }
 

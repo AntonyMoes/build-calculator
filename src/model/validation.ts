@@ -1,13 +1,22 @@
 import type {TreeToken} from "@/calculator/types.ts";
 import {parseAndValidate} from "@/calculator/utils.ts";
-import {model} from "@/model/model.ts";
+import {model, type Stat} from "@/model/model.ts";
+import {hasWhiteSpace} from "@/utils/stringUtils.ts";
 
 
-export function validateStat(oldName: string, name: string, minValue: number | undefined, maxValue: number | undefined): string[] {
+function validateName(oldName: string, name: string, names: string[], allowWhiteSpace: boolean = true): string[] {
     const result = [];
-    if (name !== oldName && (model.stats.find(stat => stat.name === name) !== undefined || name === "")) {
+    if (!allowWhiteSpace && hasWhiteSpace(name)) {
+        result.push(`The name has whitespace characters!`);
+    } else if (name !== oldName && (names.includes(name) || name === "")) {
         result.push(`The name is empty or not unique: ${name}`);
     }
+
+    return result;
+}
+
+export function validateStat(oldName: string, name: string, minValue: number | undefined, maxValue: number | undefined): string[] {
+    const result = validateName(oldName, name, model.stats.map(stat => stat.name), false);
 
     if (minValue !== undefined && maxValue !== undefined && minValue > maxValue) {
         result.push(`Max value (${maxValue}) must be greater than min value (${minValue})`);
@@ -20,10 +29,7 @@ export function validateTargetStat(oldName: string, name: string, formula: strin
     validationErrors: string[]
     tokenization: TreeToken[];
 } {
-    let result = [];
-    if (name !== oldName && (model.targetStats.find(stat => stat.name === name) !== undefined || name === "")) {
-        result.push(`The name is empty or not unique: ${name}`);
-    }
+    let result = validateName(oldName, name, model.targetStats.map(stat => stat.name), false);
 
     const {errors, missingVariables, tokenization} = parseAndValidate(formula, model.stats.map(stat => stat.name));
     result = result.concat(errors);
@@ -39,18 +45,22 @@ export function validateTargetStat(oldName: string, name: string, formula: strin
 }
 
 export function validateEquipmentType(oldName: string, name: string): string[] {
-    const result = [];
-    if (name !== oldName && (model.equipmentTypes.find(type => type.name === name) !== undefined || name === "")) {
-        result.push(`The name is empty or not unique: ${name}`);
-    }
-
-    return result;
+    return validateName(oldName, name, model.equipmentTypes.map(type => type.name));
 }
 
 export function validateEquipmentGroup(oldName: string, name: string): string[] {
+    return validateName(oldName, name, model.equipmentGroups.map(group => group.name));
+}
+
+export function validateStatValue(stat: Stat, statValue: number): string[] {
     const result = [];
-    if (name !== oldName && (model.equipmentGroups.find(group => group.name === name) !== undefined || name === "")) {
-        result.push(`The name is empty or not unique: ${name}`);
+
+    const minValue = stat.minValue;
+    const maxValue = stat.maxValue;
+    if (minValue !== undefined && statValue < minValue) {
+        result.push(`Value should be >= ${minValue}`);
+    } else if (maxValue !== undefined && statValue > maxValue) {
+        result.push(`Value should be <= ${maxValue}`);
     }
 
     return result;
