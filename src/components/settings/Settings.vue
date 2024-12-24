@@ -8,7 +8,6 @@ import {getRerenderKey} from "@/utils/rerenderKey.ts";
 import EquipmentTypes from "@/components/settings/equipmentTypes/EquipmentTypes.vue";
 import EquipmentGroups from "@/components/settings/equipmentGroups/EquipmentGroups.vue";
 
-
 const rerenderKey = getRerenderKey();
 
 const emptyInput = useTemplateRef("emptyInput");
@@ -25,8 +24,8 @@ function load() {
 
 async function onLoadFileSelected() {
   const file = loadInput.value!.files![0];
-  const text = await file.text();
   loadInput.value!.files = emptyInput.value!.files;
+  const text = await file.text();
 
   // TODO parse and validate
   const result = JSON.parse(text);
@@ -61,8 +60,6 @@ async function onLoadFileSelected() {
           accept=".json"
           ref="loadInput"
           @change="onLoadFileSelected"
-          @upload="onLoadFileSelected"
-          @close="onLoadFileSelected"
       />
       <input
           class="save-secret"

@@ -6,5 +6,5 @@ export function getRerenderKey() {
         key.value++;
     }
 
-    return { key, rerender}
+    return {key, rerender}
 }

@@ -27,6 +27,7 @@ export interface EquipmentType {
 export interface Equipment {
     id: number;
     name: string;
+    imageSrc: string;
     stats: StatValue[];
 }
 
