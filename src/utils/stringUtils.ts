@@ -13,3 +13,7 @@ export function isAlphaNumeric(s: string) {
 export function isWhiteSpace(s: string): boolean {
     return s.trim().length === 0;
 }
+
+export function isEmpty(s: string | undefined): boolean {
+    return s === undefined || s.length === 0;
+}

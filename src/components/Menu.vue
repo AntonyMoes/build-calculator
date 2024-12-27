@@ -11,13 +11,14 @@ import router from "@/router";
       {{ route.name }}
     </RouterLink>
   </div>
+  <div/>
 </template>
 
 <style scoped>
 /* The side navigation menu */
 .menu {
   background-color: #444444;
-  position: sticky;
+  position: fixed;
   min-height: 100vh;
   overflow: auto;
 }
@@ -49,7 +50,7 @@ import router from "@/router";
 }
 
 .menu a.router-link-exact-active:hover {
-  background-color: transparent;
+  /*background-color: transparent;*/
 }
 
 </style>

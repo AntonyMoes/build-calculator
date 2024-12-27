@@ -1,0 +1,68 @@
+<script setup lang="ts">
+import CharacterItem from "@/components/characters/characterList/CharacterItem.vue";
+import {type Character, type CharacterId, createId, model} from "@/model/model.ts";
+import NewCharacterItem from "@/components/characters/characterList/NewCharacterItem.vue";
+import {ref} from "vue";
+import {getCharacter} from "@/model/getters.ts";
+import CharacterPage from "@/components/characters/characterPage/CharacterPage.vue";
+
+const selectedCharacter = ref<Character | undefined>(undefined);
+
+function onCharacterClick(id: CharacterId) {
+  selectedCharacter.value = getCharacter(id);
+}
+
+function onNewCharacterClick() {
+  model.characters.push({
+    id: createId(),
+    name: "character-new",
+    imageSrc: "",
+    stats: [],
+    equipment: []
+  })
+}
+</script>
+
+<template>
+  <div class="page-container characters">
+    <div class="character-list">
+      <CharacterItem
+          v-for="character of model.characters"
+          :key="character.id"
+          :model-value="character"
+          @click="onCharacterClick"
+      />
+
+      <NewCharacterItem @click="onNewCharacterClick"/>
+    </div>
+
+    <div class="character-section">
+      <CharacterPage
+          v-if="selectedCharacter !== undefined"
+          :model-value="selectedCharacter"
+      />
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.characters {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 40px;
+}
+
+/*TODO: proper height*/
+.character-list {
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+  overflow-y: scroll;
+  scrollbar-width: none;
+  height: 90vh;
+}
+
+.character-section {
+  display: flex;
+}
+</style>

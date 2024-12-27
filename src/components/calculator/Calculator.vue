@@ -3,6 +3,7 @@ import {computed, type Ref, ref} from "vue";
 import {type Token} from "@/calculator/types.ts";
 import {calculator, tokenToString} from "@/components/calculator/calculator.ts";
 import Variable from "@/components/calculator/Variable.vue";
+import {toReversePolishNotation} from "@/calculator/reverser.ts";
 
 function tokenizationToString(tokenization: Token[]): string {
   return tokenization.map(tokenToString).join(",");
@@ -17,7 +18,9 @@ const debugInfo = computed(() => {
 
   const tokenizationString = tokenization.value !== undefined ? tokenizationToString(tokenization.value) : "";
   const variableString = tree.value !== undefined ? tree.value.variables.toString() : "";
-  return `${tokenizationString} | ${variableString} | ${errorString}`;
+  const reverseString = tree.value !== undefined ? tokenizationToString(toReversePolishNotation(tokenization.value)) : "";
+
+  return `${tokenizationString} | ${reverseString} | ${variableString} | ${errorString}`;
 })
 
 const map = new Map<string, number>();
@@ -32,7 +35,7 @@ function calculate() {
 }
 
 function clearResult() {
-  result.value = undefined;
+  // result.value = undefined;
 }
 
 const variables = computed(() => {
@@ -46,6 +49,7 @@ const variables = computed(() => {
       setValue: (value: number) => {
         map.set(variable, value);
         console.log(`${variable}: ${value}`);
+        calculate();
       }
     }
   });
@@ -82,5 +86,9 @@ const variables = computed(() => {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+.calculator {
+  margin: 100px;
 }
 </style>
