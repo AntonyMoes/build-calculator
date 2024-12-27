@@ -57,6 +57,9 @@ async function onImageSelected() {
 
 <style scoped>
 .image-with-selector {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .image-with-selector-image {

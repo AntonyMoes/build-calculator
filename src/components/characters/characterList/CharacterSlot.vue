@@ -14,5 +14,6 @@ defineEmits<{
 .character-slot {
   width: 100px;
   height: 100px;
+  flex-shrink: 0;
 }
 </style>

@@ -122,8 +122,5 @@ async function onImageSelected(image: File) {
   border: 1px solid #777777;
   width: 120px;
   height: 120px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 </style>
