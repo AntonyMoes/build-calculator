@@ -47,9 +47,9 @@ function onNewCharacterClick() {
 
 <style scoped>
 .characters {
-  display: grid;
-  grid-template-columns: 100px 1fr;
+  display: flex;
   gap: 40px;
+  height: 100vh;
 }
 
 /*TODO: proper height*/
@@ -59,7 +59,6 @@ function onNewCharacterClick() {
   flex-direction: column;
   overflow-y: scroll;
   scrollbar-width: none;
-  height: 90vh;
 }
 
 .character-section {

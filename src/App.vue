@@ -5,16 +5,22 @@ import Menu from "@/components/Menu.vue";
 <template>
   <main class="main">
     <Menu />
-    <RouterView />
+    <section class="page">
+      <RouterView />
+    </section>
   </main>
 </template>
 
 <style scoped>
+@import "@/assets/main.css";
+
 .main {
   width: 100%;
   min-height: 100vh;
-  display: grid;
-  grid-template-columns: 100px 1fr;
-  grid-template-rows: 1fr;
+}
+
+/* TODO: rename as you wish */
+.page {
+  margin-left: var(--nav-sidebar-width);
 }
 </style>

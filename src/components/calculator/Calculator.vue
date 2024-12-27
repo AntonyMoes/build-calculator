@@ -58,7 +58,7 @@ const variables = computed(() => {
 </script>
 
 <template>
-  <div class="calculator">
+  <div class="calculator page-container">
     <div>
       <input v-model="input" v-on:input="clearResult">
       <p>{{ input }}</p>
@@ -82,13 +82,11 @@ const variables = computed(() => {
 </template>
 
 <style scoped>
+@import '@/assets/main.css';
+
 .variable-container {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-}
-
-.calculator {
-  margin: 100px;
 }
 </style>

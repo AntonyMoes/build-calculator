@@ -11,15 +11,17 @@ import router from "@/router";
       {{ route.name }}
     </RouterLink>
   </div>
-  <div/>
 </template>
 
 <style scoped>
+@import '@/assets/main.css';
+
 /* The side navigation menu */
 .menu {
   background-color: #444444;
   position: fixed;
   min-height: 100vh;
+  width: var(--nav-sidebar-width);
   overflow: auto;
 }
 
