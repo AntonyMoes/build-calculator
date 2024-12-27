@@ -120,7 +120,10 @@ async function onImageSelected(image: File) {
 
 .equipment-item-img {
   border: 1px solid #777777;
-  max-width: 120px;
-  max-height: 120px;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

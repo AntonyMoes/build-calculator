@@ -12,7 +12,7 @@ defineEmits<{
 
 <style scoped>
 .character-slot {
-  min-width: 100px;
-  min-height: 100px;
+  width: 100px;
+  height: 100px;
 }
 </style>
