@@ -24,37 +24,46 @@ export interface EquipmentType {
     name: string;
 }
 
+export type EquipmentId = number;
+
 export interface Equipment {
-    id: number;
+    id: EquipmentId;
+    typeId: EquipmentTypeId;
     name: string;
     imageSrc: string;
     stats: StatValue[];
 }
 
-export interface EquipmentSlot {
-    type: EquipmentType;
-    equipment: Equipment;
-}
+export type EquipmentGroupId = number;
 
 export interface EquipmentGroup {
-    id: number;
+    id: EquipmentGroupId;
     name: string;
-    equipmentTypeIds: number[];
+    equipmentTypeIds: EquipmentTypeId[];
 }
+
+export type CharacterEquipmentGroupId = number;
 
 export interface CharacterEquipmentGroup {
-    name: string;
-    equipment: EquipmentSlot[];
+    id: CharacterEquipmentGroupId;
+    groupId: EquipmentGroupId;
+    equipment: (EquipmentId | null)[];
 }
 
+export type StatValueId = number;
+
 export interface StatValue {
-    id: number;
+    id: StatValueId;
     statId: StatId;
     value: number;
 }
 
+export type CharacterId = number;
+
 export interface Character {
+    id: CharacterId;
     name: string;
+    imageSrc: string;
     stats: StatValue[];
     equipment: CharacterEquipmentGroup[];
 }

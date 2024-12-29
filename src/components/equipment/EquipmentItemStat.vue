@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import RemoveButton from "@/components/common/RemoveButton.vue";
-import {ref} from "vue";
+import {computed, ref} from "vue";
 import {validateStatValue} from "@/model/validation.ts";
 import {type Equipment, model, type StatValue} from "@/model/model.ts";
 import ErrorsBlock from "@/components/common/ErrorsBlock.vue";
 import {getStat} from "@/model/getters.ts";
 
-defineProps<{
+const props = defineProps<{
   index: number;
   parentModel: Equipment;
 }>();
@@ -36,6 +36,8 @@ function validate(selectEvent: Event | undefined = undefined) {
     statModel.value.statId = stat.id;
   }
 }
+
+const unusedStatsOrCurrent = computed(() => model.stats.filter(st => props.parentModel.stats.find(s => s.statId === st.id) === undefined || st.name === selectedStatName.value));
 </script>
 
 <template>
@@ -47,7 +49,7 @@ function validate(selectEvent: Event | undefined = undefined) {
     >
       <option disabled value="">Select stat</option>
       <option
-          v-for="stat in model.stats.filter(st => parentModel.stats.find(s => s.statId === st.id) === undefined || st.name === selectedStatName)"
+          v-for="stat in unusedStatsOrCurrent"
           :key="stat.id"
       >
         {{ stat.name }}

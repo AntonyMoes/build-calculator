@@ -6,7 +6,7 @@ const operationDictionary: {
     [Operator.Addition]: (left, right) => left + right,
     [Operator.Subtraction]: (left, right) => left - right,
     [Operator.Multiplication]: (left, right) => left * right,
-    [Operator.Division]: (left, right) => left * right,
+    [Operator.Division]: (left, right) => left / right,
     [Operator.Power]: (left, right) => left ** right,
 }
 

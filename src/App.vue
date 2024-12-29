@@ -5,7 +5,9 @@ import Menu from "@/components/Menu.vue";
 <template>
   <main class="main">
     <Menu />
-    <RouterView />
+    <div class="page-wrapper">
+      <RouterView />
+    </div>
   </main>
 </template>
 
@@ -13,8 +15,9 @@ import Menu from "@/components/Menu.vue";
 .main {
   width: 100%;
   min-height: 100vh;
-  display: grid;
-  grid-template-columns: 100px 1fr;
-  grid-template-rows: max-content;
+}
+
+.page-wrapper {
+  margin-left: var(--nav-sidebar-width);
 }
 </style>

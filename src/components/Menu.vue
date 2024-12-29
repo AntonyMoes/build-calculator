@@ -17,8 +17,9 @@ import router from "@/router";
 /* The side navigation menu */
 .menu {
   background-color: #444444;
-  position: sticky;
+  position: fixed;
   min-height: 100vh;
+  width: var(--nav-sidebar-width);
   overflow: auto;
 }
 
@@ -49,7 +50,7 @@ import router from "@/router";
 }
 
 .menu a.router-link-exact-active:hover {
-  background-color: transparent;
+  /*background-color: transparent;*/
 }
 
 </style>

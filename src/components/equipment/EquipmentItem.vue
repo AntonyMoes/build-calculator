@@ -1,20 +1,27 @@
 <script setup lang="ts">
-import {createId, type Equipment, model, type Stat} from "@/model/model.ts";
+import {type Equipment, type EquipmentId, model, type Stat} from "@/model/model.ts";
 import RemoveButton from "@/components/common/RemoveButton.vue";
 import EquipmentItemStat from "@/components/equipment/EquipmentItemStat.vue";
-import {useTemplateRef} from "vue";
 import {getRerenderKey} from "@/utils/rerenderKey.ts";
+import {imageToSrc} from "@/utils/image.ts";
+import SelectedImage from "@/components/common/SelectedImage.vue";
+import {createStatValue} from "@/model/setters.ts";
+import {getEquipmentType} from "@/model/getters.ts";
+import {ref} from "vue";
 
 const rerenderKey = getRerenderKey();
 
 const equipmentModel = defineModel<Equipment>({required: true});
 
 defineEmits<{
-  (name: "remove", id: number): void;
+  (name: "remove", id: EquipmentId): void;
 }>();
 
-const imageInput = useTemplateRef("imageInput");
-const emptyInput = useTemplateRef("emptyInput");
+const selectedType = ref<string>(getEquipmentType(equipmentModel.value.typeId)!.name);
+
+function updateType() {
+  equipmentModel.value.typeId = model.equipmentTypes.find(type => type.name === selectedType.value)!.id;
+}
 
 function removeStat(index: number) {
   equipmentModel.value.stats.splice(index, 1);
@@ -41,29 +48,11 @@ function addStat() {
     return;
   }
 
-  equipmentModel.value.stats.push({
-    id: createId(),
-    statId: newStat.id,
-    value: newStat.minValue === undefined ? 0 : newStat.minValue,
-  })
+  createStatValue(equipmentModel.value.stats, newStat);
 }
 
-function onImageClick() {
-  imageInput.value!.click();
-}
-
-async function onImageSelected() {
-  const file = imageInput.value!.files![0];
-  imageInput.value!.files = emptyInput.value!.files;
-
-  const fileDataURL = (f: File) => new Promise<string>((resolve, reject) => {
-    let fr = new FileReader();
-    fr.onload = () => resolve(fr.result as string);
-    fr.onerror = reject;
-    fr.readAsDataURL(f);
-  });
-
-  equipmentModel.value.imageSrc = await fileDataURL(file);
+async function onImageSelected(image: File) {
+  equipmentModel.value.imageSrc = await imageToSrc(image);
   rerenderKey.rerender();
 }
 </script>
@@ -75,25 +64,32 @@ async function onImageSelected() {
         type="text"
         v-model="equipmentModel.name"
     />
-    <RemoveButton class="equipment-item-block" @remove="$emit('remove', equipmentModel.id)"/>
-    <img
+
+    <RemoveButton
+        class="equipment-item-block"
+        @remove="$emit('remove', equipmentModel.id)"
+    />
+
+    <select
+        v-model="selectedType"
+        @change="updateType"
+    >
+      <option disabled value="">Select group</option>
+      <option
+          v-for="type of model.equipmentTypes"
+          :key="type.id"
+      >
+        {{type.name}}
+      </option>
+    </select>
+
+    <SelectedImage
         class="equipment-item-img"
         :src="equipmentModel.imageSrc"
-        alt="Image goes here"
-        @click="onImageClick"
-    >
-    <input
-        class="equipment-item-secret"
-        type="file"
-        accept="image/*"
-        ref="imageInput"
-        @change="onImageSelected"
-    >
-    <input
-        class="equipment-item-secret"
-        type="file"
-        ref="emptyInput"
+        :can-select="true"
+        @selectImage="onImageSelected"
     />
+
     <EquipmentItemStat
         v-for="[index, item] of equipmentModel.stats.entries()"
         :key="item.id"
@@ -102,6 +98,7 @@ async function onImageSelected() {
         :model-value="item"
         @remove="removeStat"
     />
+
     <input type="button" value="Add" v-on:click="addStat">
   </div>
 </template>
@@ -123,7 +120,7 @@ async function onImageSelected() {
 
 .equipment-item-img {
   border: 1px solid #777777;
-  max-width: 120px;
-  max-height: 120px;
+  width: 120px;
+  height: 120px;
 }
 </style>

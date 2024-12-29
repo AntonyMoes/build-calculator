@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import SettingsGroup from "@/components/settings/common/SettingsGroup.vue";
-import {createId, model} from "@/model/model.ts";
+import {createId, type EquipmentGroupId, model} from "@/model/model.ts";
 import EquipmentGroup from "@/components/settings/equipmentGroups/EquipmentGroup.vue";
 
 function add() {
@@ -16,8 +16,8 @@ function add() {
   })
 }
 
-function remove(value: string) {
-  const index = model.equipmentGroups.indexOf(model.equipmentGroups.find(group => group.name === value)!);
+function remove(id: EquipmentGroupId) {
+  const index = model.equipmentGroups.indexOf(model.equipmentGroups.find(group => group.id === id)!);
   if (index > -1) {
     model.equipmentGroups.splice(index, 1);
   }

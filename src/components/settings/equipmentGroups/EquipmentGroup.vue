@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import SettingsCard from "@/components/settings/common/SettingsCard.vue";
 import {ref} from "vue";
-import {type EquipmentGroup, model} from "@/model/model.ts";
+import {type EquipmentGroup, type EquipmentGroupId, model} from "@/model/model.ts";
 import {validateEquipmentGroup} from "@/model/validation.ts";
 import EquipmentGroupTypeItem from "@/components/settings/equipmentGroups/EquipmentGroupTypeItem.vue";
 
 const groupModel = defineModel<EquipmentGroup>({required: true});
 
 defineEmits<{
-  (name: "remove", value: string): void
+  (name: "remove", value: EquipmentGroupId): void
 }>();
 
 const name = ref(groupModel.value.name);
@@ -42,7 +42,7 @@ function validate() {
 </script>
 
 <template>
-  <SettingsCard @remove="$emit('remove', groupModel.name)" :errors="errors">
+  <SettingsCard @remove="$emit('remove', groupModel.id)" :errors="errors">
     <template #content>
       <input
           class="equipment-group-block"
