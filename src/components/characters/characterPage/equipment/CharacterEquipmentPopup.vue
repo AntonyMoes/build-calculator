@@ -64,7 +64,6 @@ const selectedStats = computed<StatId>(() => {
 });
 
 function onSelectEquipment(equipment: Equipment | null) {
-  console.log(`EQUIP ${equipment?.id}`);
   selected.value = equipment;
 }
 

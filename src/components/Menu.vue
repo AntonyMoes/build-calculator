@@ -5,7 +5,7 @@ import router from "@/router";
 <template>
   <div class="menu">
     <RouterLink
-        v-for="route of router.getRoutes()"
+        v-for="route of router.getRoutes().filter(r => !r.path.includes('test'))"
         :key="route.path"
         :to="route.path">
       {{ route.name }}

@@ -1,5 +1,5 @@
 import {computed, type Ref, ref} from "vue";
-import {Parenthesis, ParseError, type Token, type TreeToken} from "@/calculator/types.ts";
+import {Parenthesis, type Token} from "@/calculator/types.ts";
 import {CalculationTree} from "@/calculator/calculationTree.ts";
 import {tokenize} from "@/calculator/tokenizer.ts";
 import {validate} from "@/calculator/validator.ts";
@@ -53,31 +53,6 @@ function calculator() {
         const stack = toReversePolishNotation(tokenization);
         return new CalculationTree(stack);
     }
-
-    // const logic = () => {
-    //     error.value = undefined;
-    //     tree.value = undefined;
-    //     tokenization.value = [];
-    //
-    //     try {
-    //         tokenization.value = tokenize(input.value);
-    //     } catch (e) {
-    //         const parseError = e as ParseError;
-    //         error.value = parseError.toString();
-    //         return;
-    //     }
-    //
-    //     const validationError = validate(tokenization.value);
-    //     if (validationError !== undefined) {
-    //         error.value = `Error in token #${validationError.tokenIndex}: ${tokenToString(tokenization.value[validationError.tokenIndex])}`;
-    //         return;
-    //     }
-    //
-    //     const stack = toReversePolishNotation(tokenization.value);
-    //     tree.value = new CalculationTree(stack);
-    // }
-    //
-    // logic();
 
     return {input, tokenization, tree, error};
 }

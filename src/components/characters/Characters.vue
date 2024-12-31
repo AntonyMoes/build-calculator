@@ -30,6 +30,7 @@ function onNewCharacterClick() {
           v-for="character of model.characters"
           :key="character.id"
           :model-value="character"
+          :title="character.name"
           @click="onCharacterClick"
       />
 

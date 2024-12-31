@@ -4,6 +4,7 @@ import {type Token} from "@/calculator/types.ts";
 import {calculator, tokenToString} from "@/components/calculator/calculator.ts";
 import Variable from "@/components/calculator/Variable.vue";
 import {toReversePolishNotation} from "@/calculator/reverser.ts";
+import {DifferentiationTree} from "@/calculator/differentiationTree.ts";
 
 function tokenizationToString(tokenization: Token[]): string {
   return tokenization.map(tokenToString).join(",");
@@ -21,10 +22,24 @@ const debugInfo = computed(() => {
   const reverseString = tree.value !== undefined ? tokenizationToString(toReversePolishNotation(tokenization.value)) : "";
 
   return `${tokenizationString} | ${reverseString} | ${variableString} | ${errorString}`;
-})
+});
+
+const optimizedTree = computed(() => {
+  return tree.value !== undefined ? new DifferentiationTree(tree.value) : undefined;
+});
+
+const originalTreeString = computed(() => {
+  return tree.value !== undefined ? tree.value.toString() : "";
+});
+
+const optimizedTreeString = computed(() => {
+  return optimizedTree.value !== undefined ? optimizedTree.value.toString() : "";
+});
 
 const map = new Map<string, number>();
-const result: Ref<number | undefined> = ref(undefined)
+const result: Ref<number | undefined> = ref(undefined);
+const optimizedResult: Ref<number | undefined> = ref(undefined);
+const gradient: Ref<Map<string, number>> = ref(new Map<string, number>());
 
 function calculate() {
   if (tree.value === undefined) {
@@ -32,6 +47,8 @@ function calculate() {
   }
 
   result.value = tree.value.calculate(map);
+  optimizedResult.value = optimizedTree.value!.calculate(map);
+  gradient.value = optimizedTree.value!.calculateGradient(map);
 }
 
 function clearResult() {
@@ -48,7 +65,6 @@ const variables = computed(() => {
       name: variable,
       setValue: (value: number) => {
         map.set(variable, value);
-        console.log(`${variable}: ${value}`);
         calculate();
       }
     }
@@ -63,10 +79,14 @@ const variables = computed(() => {
       <input v-model="input" v-on:input="clearResult">
       <p>{{ input }}</p>
       <p>{{ debugInfo }}</p>
+      <p>{{ originalTreeString }}</p>
+      <p>{{ optimizedTreeString }}</p>
     </div>
     <div>
       <input type="button" value="Click!" v-on:click="calculate"></input>
       <p>{{ result }}</p>
+      <p>{{ optimizedResult }}</p>
+      <p>{{ gradient }} | {{ [].concat(...gradient.values()).map(val => val ** 2).reduce((acc, val) => acc + val, 0) ** 0.5 }}</p>
     </div>
 
     <!--  :name="variable.name"-->

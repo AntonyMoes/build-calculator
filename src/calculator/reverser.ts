@@ -1,14 +1,4 @@
-import {Operator, type OperatorToken, type Token, type TreeToken} from "@/calculator/types.ts";
-
-const operatorPriority: {
-    [key in Operator]: number;
-} = {
-    [Operator.Addition]: 0,
-    [Operator.Subtraction]: 0,
-    [Operator.Multiplication]: 1,
-    [Operator.Division]: 1,
-    [Operator.Power]: 2,
-}
+import {operatorPriority, type OperatorToken, type Token, type TreeToken} from "@/calculator/types.ts";
 
 const parenthesisPriorityChange: {
     [key: string]: number;
@@ -16,7 +6,6 @@ const parenthesisPriorityChange: {
     ["openParenthesis"]: 10,
     ["closeParenthesis"]: -10,
 }
-
 
 interface StackOperator {
     operator: OperatorToken

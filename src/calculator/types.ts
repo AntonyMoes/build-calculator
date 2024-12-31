@@ -38,3 +38,13 @@ export interface CloseParenthesisToken {
 export type OperandToken = VariableToken | ConstantToken;
 export type TreeToken = OperatorToken | OperandToken;
 export type Token = TreeToken | OpenParenthesisToken | CloseParenthesisToken;
+
+export const operatorPriority: {
+    [key in Operator]: number;
+} = {
+    [Operator.Addition]: 0,
+    [Operator.Subtraction]: 0,
+    [Operator.Multiplication]: 1,
+    [Operator.Division]: 1,
+    [Operator.Power]: 2,
+}

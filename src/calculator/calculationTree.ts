@@ -1,4 +1,4 @@
-import {Operator, type TreeToken} from "@/calculator/types.ts";
+import {Operator, operatorPriority, type TreeToken} from "@/calculator/types.ts";
 
 const operationDictionary: {
     [key in Operator]: { (left: number, right: number): number };
@@ -10,13 +10,17 @@ const operationDictionary: {
     [Operator.Power]: (left, right) => left ** right,
 }
 
-type VariableDictionary = Map<string, number>;
+export type VariableDictionary = Map<string, number>;
 
-abstract class Node {
+export abstract class Node {
     abstract calculate(dictionary: VariableDictionary): number;
+
+    abstract getSting(parentNode: Node | undefined): string;
+
+    abstract clone(): Node;
 }
 
-class OperatorNode extends Node {
+export class OperatorNode extends Node {
     operator: Operator
     left: Node
     right: Node
@@ -34,9 +38,22 @@ class OperatorNode extends Node {
         const right = this.right.calculate(dictionary);
         return operation(left, right);
     }
+
+    getSting(parentNode: Node | undefined): string {
+        const result = `${this.left.getSting(this)} ${this.operator} ${this.right.getSting(this)}`;
+        return parentNode instanceof OperatorNode
+        && (operatorPriority[parentNode.operator] > operatorPriority[this.operator]
+            || parentNode.operator === Operator.Subtraction && parentNode.right === this)
+            ? `(${result})`
+            : result;
+    }
+
+    clone(): Node {
+        return new OperatorNode(this.left.clone(), this.right.clone(), this.operator);
+    }
 }
 
-class ConstantNode extends Node {
+export class ConstantNode extends Node {
     constant: number
 
     constructor(constant: number) {
@@ -47,18 +64,44 @@ class ConstantNode extends Node {
     calculate(dictionary: VariableDictionary): number {
         return this.constant;
     }
+
+    getSting(parentNode: Node | undefined): string {
+        return this.constant.toString();
+    }
+
+    clone(): Node {
+        return new ConstantNode(this.constant);
+    }
 }
 
-class VariableNode extends Node {
+export class VariableNode extends Node {
     variable: string
+    power: number
+    multiplier: number
 
-    constructor(variable: string) {
+    constructor(variable: string, power: number | undefined = undefined, multiplier: number | undefined = undefined) {
         super();
         this.variable = variable;
+        this.power = power ?? 1;
+        this.multiplier = multiplier ?? 1;
     }
 
     calculate(dictionary: VariableDictionary): number {
-        return dictionary.has(this.variable) ? dictionary.get(this.variable)! : 0;
+        return dictionary.has(this.variable) ? this.multiplier * (dictionary.get(this.variable)! ** this.power) : 0;
+    }
+
+    getSting(parentNode: Node | undefined): string {
+        const multiplier = this.multiplier === 1
+            ? ""
+            : `${this.multiplier}*`
+        const power = this.power === 1
+            ? ""
+            : `^${this.power}`;
+        return `${multiplier}${this.variable}${power}`;
+    }
+
+    clone(): Node {
+        return new VariableNode(this.variable, this.power, this.multiplier);
     }
 }
 
@@ -84,6 +127,10 @@ export class CalculationTree {
     variables: string[]
 
     constructor(stack: TreeToken[]) {
+        if (stack === undefined) {
+            return;  // HACK
+        }
+
         const copy = [...stack];
         if (copy.length === 0) {
             copy.push({kind: "constant", value: 0});
@@ -96,5 +143,16 @@ export class CalculationTree {
 
     calculate(dictionary: VariableDictionary) {
         return this.root.calculate(dictionary);
+    }
+
+    toString(): string {
+        return this.root.getSting(undefined);
+    }
+
+    clone(): CalculationTree {
+        const tree = new CalculationTree();
+        tree.root = this.root.clone();
+        tree.variables = [...this.variables];
+        return tree;
     }
 }

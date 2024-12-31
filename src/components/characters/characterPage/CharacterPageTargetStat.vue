@@ -1,15 +1,26 @@
 <script setup lang="ts">
 import type {Character, TargetStat} from "@/model/model.ts";
-import {calculateTargetStat} from "@/model/getters.ts";
-import {computed} from "vue";
+import {getTargetStatCalculation} from "@/model/getters.ts";
+import {computed, type ComputedRef} from "vue";
 import {formatValue} from "@/components/characters/characterPage/utils.ts";
+import type {DifferentiationTree} from "@/calculator/differentiationTree.ts";
 
 const props = defineProps<{
   targetStat: TargetStat,
   character: Character,
+  expanded: boolean
 }>();
 
-const value = computed(() => formatValue(calculateTargetStat(props.targetStat, props.character)));
+defineEmits<{
+  (name: "toggleStat", stat: TargetStat, calculationTree: DifferentiationTree, variables: ComputedRef<Map<string, number>>): void;
+}>();
+
+// const valueGradient = computed(() => calculateTargetStat(props.targetStat, props.character));
+// const value = computed(() => formatValue(valueGradient.value[0]));
+// const gradient = computed(() => valueGradient.value[1]);
+const treeMap = computed(() => getTargetStatCalculation(props.targetStat, props.character));
+const value = computed(() => formatValue(treeMap.value[0].calculate(treeMap.value[1].value)));
+// const gradient = computed(() => treeMap.value[0].calculateGradient(treeMap.value[1].value));
 </script>
 
 <template>
@@ -20,13 +31,19 @@ const value = computed(() => formatValue(calculateTargetStat(props.targetStat, p
     <p class="character-page-target-stat-output">
       {{ value }}
     </p>
+    <input
+        class="character-page-target-stat-expand"
+        type="button"
+        :value="expanded ? '<' : '>'"
+        @click="$emit('toggleStat', targetStat, treeMap[0], treeMap[1])"
+    />
   </div>
 </template>
 
 <style scoped>
 .character-page-target-stat {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1.5fr .5fr;
   gap: 2rem;
   max-width: 20rem;
 }
@@ -38,6 +55,12 @@ const value = computed(() => formatValue(calculateTargetStat(props.targetStat, p
 
 .character-page-target-stat-output {
   width: 100%;
+  height: 1.5rem;
+}
+
+.character-page-target-stat-expand {
+  display: inline-block;
+  width: 1.5rem;
   height: 1.5rem;
 }
 </style>
