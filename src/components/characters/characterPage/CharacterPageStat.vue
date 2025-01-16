@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import ErrorsBlock from "@/components/common/ErrorsBlock.vue";
 import {ref} from "vue";
-import type {StatValue} from "@/model/model.ts";
-import {getStat} from "@/model/getters.ts";
+import type {StatValue} from "@/model/modelData.ts";
 import {validateStatValue} from "@/model/validation.ts";
+import {model} from "@/model/model.ts";
 
-const model = defineModel<StatValue>({required: true});
+const valueModel = defineModel<StatValue>({required: true});
 
-const stat = getStat(model.value.statId)!;
+const stat = model.getStat(valueModel.value.statId)!;
 
-const value = ref(model.value.value);
+const value = ref(valueModel.value.value);
 const errors = ref<string[]>([]);
 
 function validate() {
@@ -17,7 +17,7 @@ function validate() {
   errors.value = validationErrors;
 
   if (validationErrors.length === 0) {
-    model.value.value = value.value;
+    valueModel.value.value = value.value;
   }
 }
 </script>

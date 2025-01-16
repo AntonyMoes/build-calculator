@@ -2,33 +2,32 @@
 import {
   type Character,
   type CharacterEquipmentGroup as CharEquipmentGroup,
-  createId,
+  type Equipment,
   type EquipmentId,
   type EquipmentTypeId,
-  model,
+  type StatValue,
   type TargetStat
-} from "@/model/model.ts";
+} from "@/model/modelData.ts";
 import {getRerenderKey} from "@/utils/rerenderKey.ts";
 import {imageToSrc} from "@/utils/image.ts";
 import SelectedImage from "@/components/common/SelectedImage.vue";
 import CharacterPageGroup from "@/components/characters/characterPage/CharacterPageGroup.vue";
 import CharacterPageStat from "@/components/characters/characterPage/CharacterPageStat.vue";
 import {computed, type ComputedRef, ref} from "vue";
-import {setAllStatValues} from "@/model/setters.ts";
 import CharacterPageTargetStat from "@/components/characters/characterPage/CharacterPageTargetStat.vue";
 import CharacterEquipmentGroup from "@/components/characters/characterPage/equipment/CharacterEquipmentGroup.vue";
 import CharacterEquipmentPopup from "@/components/characters/characterPage/equipment/CharacterEquipmentPopup.vue";
-import {getEquipmentGroup} from "@/model/getters.ts";
 import type {DifferentiationTree} from "@/calculator/differentiationTree.ts";
 import CharacterPageTargetStatGradientItem
   from "@/components/characters/characterPage/CharacterPageTargetStatGradientItem.vue";
+import {model} from "@/model/model.ts";
 
 const characterModel = defineModel<Character>({required: true});
 
 const rerenderKey = getRerenderKey();
 
 const statValues = computed<StatValue[]>(() => {
-  setAllStatValues(characterModel.value.stats);
+  model.setAllCharacterStatValues(characterModel.value);
   targetStatInfoShown.value = false;
   return characterModel.value.stats;
 })
@@ -58,14 +57,14 @@ function onToggleStat(stat: TargetStat, calculationTree: DifferentiationTree, va
 }
 
 function addEquipmentGroup() {
-  if (model.equipmentGroups.length === 0) {
+  if (model.data.equipmentGroups.length === 0) {
     alert("No equipment groups to add.");
     return;
   }
 
   characterModel.value.equipment.push({
-    id: createId(),
-    groupId: model.equipmentGroups[0].id,
+    id: model.createId(),
+    groupId: model.data.equipmentGroups[0].id,
     equipment: []
   });
 }
@@ -83,19 +82,19 @@ function onEquipmentPopupClose() {
 function onSelectEquipmentSlot(group: CharEquipmentGroup, slotIndex: number) {
   equipmentPopupGroup.value = group;
   equipmentPopupSlotIndex.value = slotIndex;
-  equipmentPopupType.value = getEquipmentGroup(group.groupId)!.equipmentTypeIds[slotIndex];
+  equipmentPopupType.value = model.getEquipmentGroup(group.groupId)!.equipmentTypeIds[slotIndex];
   equipmentPopupEquipped.value = group.equipment[slotIndex];
   equipmentPopupOpen.value = true;
 }
 
 function onSelectEquipment(equipment: Equipment | null) {
-  equipmentPopupGroup.value.equipment[equipmentPopupSlotIndex.value] = equipment !== null ? equipment.id : null;
+  equipmentPopupGroup.value!.equipment[equipmentPopupSlotIndex.value] = equipment !== null ? equipment.id : null;
 }
 </script>
 
 <template>
   <div class="character-page">
-    <div class="character-page-subpage" :key="rerenderKey.key">
+    <div class="character-page-subpage" :key="rerenderKey.key.value">
       <div class="character-page-top">
         <SelectedImage
             class="character-page-image character-page-top-element"
@@ -131,7 +130,7 @@ function onSelectEquipment(equipment: Equipment | null) {
           </template>
           <template #content>
             <CharacterPageTargetStat
-                v-for="targetStat of model.targetStats"
+                v-for="targetStat of model.data.targetStats"
                 :key="targetStat.id"
                 :targetStat="targetStat"
                 :character="characterModel"
@@ -175,7 +174,7 @@ function onSelectEquipment(equipment: Equipment | null) {
     </div>
 
     <div class="character-page-subpage" v-if="targetStatInfoShown">
-      <h1>Stat analysis - {{ targetStatInfoStat.name }}</h1>
+      <h1>Stat analysis - {{ targetStatInfoStat!.name }}</h1>
       <CharacterPageGroup>
         <template #name>
           Gradient
@@ -184,8 +183,8 @@ function onSelectEquipment(equipment: Equipment | null) {
         <template #content>
           <div class="">
             <CharacterPageTargetStatGradientItem
-                v-for="[statName, value] of targetStatInfoTree.calculateGradient(targetStatVariables.value).entries()"
-                :key="model.stats.find(s => s.name === statName)!.id"
+                v-for="[statName, value] of targetStatInfoTree!.calculateGradient(targetStatVariables!.value).entries()"
+                :key="model.data.stats.find(s => s.name === statName)!.id"
                 :stat-name="statName"
                 :gradient="value"
             />

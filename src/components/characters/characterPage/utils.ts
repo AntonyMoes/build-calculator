@@ -1,4 +1,4 @@
-import type {Equipment} from "@/model/model.ts";
+import type {Equipment} from "@/model/modelData.ts";
 
 export function getDisplayName(equipment: Equipment | null): string {
     return equipment === null ? 'None' : equipment.name;

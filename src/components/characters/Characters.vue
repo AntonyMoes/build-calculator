@@ -1,20 +1,20 @@
 <script setup lang="ts">
 import CharacterItem from "@/components/characters/characterList/CharacterItem.vue";
-import {type Character, type CharacterId, createId, model} from "@/model/model.ts";
+import {type Character, type CharacterId} from "@/model/modelData.ts";
+import {model} from "@/model/model.ts";
 import NewCharacterItem from "@/components/characters/characterList/NewCharacterItem.vue";
 import {ref} from "vue";
-import {getCharacter} from "@/model/getters.ts";
 import CharacterPage from "@/components/characters/characterPage/CharacterPage.vue";
 
 const selectedCharacter = ref<Character | undefined>(undefined);
 
 function onCharacterClick(id: CharacterId) {
-  selectedCharacter.value = getCharacter(id);
+  selectedCharacter.value = model.getCharacter(id);
 }
 
 function onNewCharacterClick() {
-  model.characters.push({
-    id: createId(),
+  model.data.characters.push({
+    id: model.createId(),
     name: "character-new",
     imageSrc: "",
     stats: [],
@@ -27,7 +27,7 @@ function onNewCharacterClick() {
   <div class="page-container characters">
     <div class="character-list">
       <CharacterItem
-          v-for="character of model.characters"
+          v-for="character of model.data.characters"
           :key="character.id"
           :model-value="character"
           :title="character.name"

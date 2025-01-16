@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import {getDefaultValue, getStat} from "@/model/getters.ts";
 import {computed} from "vue";
 import {formatValue} from "@/components/characters/characterPage/utils.ts";
+import type {Equipment, StatId} from "@/model/modelData.ts";
+import {model} from "@/model/model.ts";
 
 const props = defineProps<{
   statId: StatId;
@@ -9,7 +10,7 @@ const props = defineProps<{
   selected: Equipment | null;
 }>();
 
-const stat = computed(() => getStat(props.statId)!);
+const stat = computed(() => model.getStat(props.statId)!);
 const equippedValue = computed(() => getValue(props.equipped));
 const selectedValue = computed(() => getValue(props.selected));
 const delta = computed(() => selectedValue.value - equippedValue.value);
@@ -24,7 +25,7 @@ function getValue(equipment: Equipment | null): number {
     }
   }
 
-  return getDefaultValue(stat.value);
+  return model.getDefaultStatValue(stat.value);
 }
 </script>
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import SettingsCard from "@/components/settings/common/SettingsCard.vue";
 import {ref} from "vue";
-import {type EquipmentType} from "@/model/model.ts";
+import {type EquipmentType} from "@/model/modelData.ts";
 import {validateEquipmentType} from "@/model/validation.ts";
 
 const model = defineModel<EquipmentType>({required: true});

@@ -1,17 +1,18 @@
 <script setup lang="ts">
 
 import EquipmentItem from "@/components/equipment/EquipmentItem.vue";
-import {createId, type EquipmentId, model} from "@/model/model.ts";
+import {type EquipmentId} from "@/model/modelData.ts";
+import {model} from "@/model/model.ts";
 
 function add() {
-  if (model.equipmentTypes.length === 0) {
+  if (model.data.equipmentTypes.length === 0) {
     alert("No equipment types.");
     return;
   }
 
-  model.equipment.push({
-    id: createId(),
-    typeId: model.equipmentTypes[0].id,
+  model.data.equipment.push({
+    id: model.createId(),
+    typeId: model.data.equipmentTypes[0].id,
     name: "equipment-name",
     imageSrc: "",
     stats: []
@@ -19,9 +20,9 @@ function add() {
 }
 
 function remove(id: EquipmentId) {
-  const index = model.equipment.findIndex(equipment => equipment.id === id);
+  const index = model.data.equipment.findIndex(equipment => equipment.id === id);
   if (index > -1) {
-    model.equipment.splice(index, 1);
+    model.data.equipment.splice(index, 1);
   }
 }
 </script>
@@ -29,7 +30,7 @@ function remove(id: EquipmentId) {
 <template>
   <div class="page-container equipment">
     <EquipmentItem
-        v-for="equipment of model.equipment"
+        v-for="equipment of model.data.equipment"
         :key="equipment.id"
         :model-value="equipment"
         @remove="remove"

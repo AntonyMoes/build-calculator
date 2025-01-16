@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import SettingsGroup from "@/components/settings/common/SettingsGroup.vue";
-import {createId, model} from "@/model/model.ts";
+import {model} from "@/model/model.ts";
 import TargetStat from "@/components/settings/targetStats/TargetStat.vue";
 
 function add() {
   let newName = "target-stat-new";
-  while (model.targetStats.find(stat => stat.name === newName) !== undefined) {
+  while (model.data.targetStats.find(stat => stat.name === newName) !== undefined) {
     newName += "-new";
   }
 
-  model.targetStats.push({
-    id: createId(),
+  model.data.targetStats.push({
+    id: model.createId(),
     name: newName,
     formula: "",
     tokenization: []
@@ -18,9 +18,9 @@ function add() {
 }
 
 function remove(value: string) {
-  const index = model.targetStats.indexOf(model.targetStats.find(stat => stat.name === value)!);
+  const index = model.data.targetStats.indexOf(model.data.targetStats.find(stat => stat.name === value)!);
   if (index > -1) {
-    model.targetStats.splice(index, 1);
+    model.data.targetStats.splice(index, 1);
   }
 }
 </script>
@@ -33,7 +33,7 @@ function remove(value: string) {
       </template>
       <template #items>
         <TargetStat
-            v-for="targetStat in model.targetStats"
+            v-for="targetStat in model.data.targetStats"
             :key="targetStat.id"
             :model-value="targetStat"
             @remove="remove"

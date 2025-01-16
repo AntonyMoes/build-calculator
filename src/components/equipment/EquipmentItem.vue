@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import {type Equipment, type EquipmentId, model, type Stat} from "@/model/model.ts";
+import {type Equipment, type EquipmentId, type Stat} from "@/model/modelData.ts";
+import {model} from "@/model/model.ts";
 import RemoveButton from "@/components/common/RemoveButton.vue";
 import EquipmentItemStat from "@/components/equipment/EquipmentItemStat.vue";
 import {getRerenderKey} from "@/utils/rerenderKey.ts";
 import {imageToSrc} from "@/utils/image.ts";
 import SelectedImage from "@/components/common/SelectedImage.vue";
-import {createStatValue} from "@/model/setters.ts";
-import {getEquipmentType} from "@/model/getters.ts";
 import {ref} from "vue";
 
 const rerenderKey = getRerenderKey();
@@ -17,10 +16,10 @@ defineEmits<{
   (name: "remove", id: EquipmentId): void;
 }>();
 
-const selectedType = ref<string>(getEquipmentType(equipmentModel.value.typeId)!.name);
+const selectedType = ref<string>(model.getEquipmentType(equipmentModel.value.typeId)!.name);
 
 function updateType() {
-  equipmentModel.value.typeId = model.equipmentTypes.find(type => type.name === selectedType.value)!.id;
+  equipmentModel.value.typeId = model.data.equipmentTypes.find(type => type.name === selectedType.value)!.id;
 }
 
 function removeStat(index: number) {
@@ -28,13 +27,13 @@ function removeStat(index: number) {
 }
 
 function addStat() {
-  if (model.stats.length === 0) {
+  if (model.data.stats.length === 0) {
     alert("No stat to add.");
     return;
   }
 
   let newStat: Stat | undefined = undefined;
-  for (const stat of model.stats) {
+  for (const stat of model.data.stats) {
     if (equipmentModel.value.stats.find(s => s.statId === stat.id) !== undefined) {
       continue;
     }
@@ -48,7 +47,7 @@ function addStat() {
     return;
   }
 
-  createStatValue(equipmentModel.value.stats, newStat);
+  model.addStatValue(equipmentModel.value.stats, newStat);
 }
 
 async function onImageSelected(image: File) {
@@ -76,7 +75,7 @@ async function onImageSelected(image: File) {
     >
       <option disabled value="">Select group</option>
       <option
-          v-for="type of model.equipmentTypes"
+          v-for="type of model.data.equipmentTypes"
           :key="type.id"
       >
         {{type.name}}

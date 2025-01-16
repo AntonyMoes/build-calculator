@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import SettingsCard from "@/components/settings/common/SettingsCard.vue";
 import {ref} from "vue";
-import {type Stat} from "@/model/model.ts";
+import {type Stat} from "@/model/modelData.ts";
 import {fromOptional, optional} from "@/utils/optional.ts";
 import {validateStat} from "@/model/validation.ts";
 

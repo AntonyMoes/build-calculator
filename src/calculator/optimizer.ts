@@ -1,5 +1,5 @@
 import {Operator} from "@/calculator/types.ts";
-import {ConstantNode, Node, OperatorNode, VariableNode} from "@/calculator/calculationTree.ts";
+import {CalculationTree, ConstantNode, Node, OperatorNode, VariableNode} from "@/calculator/calculationTree.ts";
 
 function isConstant(node: Node, constant: number | undefined = undefined): node is ConstantNode {
     return node instanceof ConstantNode && (constant === undefined || node.constant === constant);
@@ -201,7 +201,7 @@ class NormalFormatOptimization extends TreeOptimization {
             const rl = r.left;
             if (l.variable !== rl.variable && rl.variable < l.variable
                 || l.variable === rl.variable && rl.power > l.power) {
-                return new OperatorNode(rl, new OperatorNode(l, node.right.right, node.operator), node.operator);
+                return new OperatorNode(rl, new OperatorNode(l, r.right, node.operator), node.operator);
             }
         }
 
@@ -218,7 +218,7 @@ class NormalFormatOptimization extends TreeOptimization {
             return new OperatorNode(newVariable, node.right.right, node.operator);
         }
 
-        if (isVariable(node.left) && isOperator(node.right, node.operator) && isVariable(node.right.left, node.left)) {
+        if (isVariable(node.left) && isOperator(node.right, node.operator) && isVariable(node.right.left, node.left.variable)) {
             if (isOperator(node, Operator.Multiplication)) {
                 const newVariable = new VariableNode(node.left.variable, node.left.power + node.right.left.power, node.left.multiplier * node.right.left.multiplier);
                 return new OperatorNode(newVariable, node.right.right, node.operator);

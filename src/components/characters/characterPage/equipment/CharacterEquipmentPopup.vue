@@ -2,9 +2,9 @@
 import Popup from "@/components/common/Popup.vue";
 import CharacterEquipmentPopupItem
   from "@/components/characters/characterPage/equipment/CharacterEquipmentPopupItem.vue";
-import {type Equipment, type EquipmentId, type EquipmentTypeId, model, type StatId} from "@/model/model.ts";
+import {type Equipment, type EquipmentId, type EquipmentTypeId, type StatId} from "@/model/modelData.ts";
+import {model} from "@/model/model.ts";
 import {computed, ref} from "vue";
-import {getEquipment} from "@/model/getters.ts";
 import {getDisplayName} from "../utils.ts";
 import CharacterEquipmentPopupStatItem
   from "@/components/characters/characterPage/equipment/CharacterEquipmentPopupStatItem.vue";
@@ -26,7 +26,7 @@ const equipped = computed<Equipment | null>(() => {
     return null;
   }
 
-  const e = props.equipped === null ? null : getEquipment(props.equipped)!;
+  const e = props.equipped === null ? null : model.getEquipment(props.equipped)!;
   selected.value = e;
   return e;
 })
@@ -36,20 +36,20 @@ const equipmentList = computed<(Equipment | null)[]>(() => {
     return [];
   }
 
-  const filtered = model.equipment.filter(e => e.typeId === props.typeId);
+  const filtered = model.data.equipment.filter(e => e.typeId === props.typeId);
   const full = [null].concat(filtered);
   if (props.equipped === null) {
     return full;
   }
 
-  const equippedItem = getEquipment(props.equipped)!;
+  const equippedItem = model.getEquipment(props.equipped)!;
   const index = full.indexOf(equippedItem);
   full.splice(index, 1);
   return [equippedItem].concat(full);
 });
 
-const selectedStats = computed<StatId>(() => {
-  let result = [];
+const selectedStats = computed<StatId[]>(() => {
+  let result: StatId[] = [];
   if (equipped.value !== null) {
     result = result.concat(equipped.value.stats.map(stat => stat.statId));
   }

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import {type CharacterEquipmentGroup, type EquipmentId, model} from "@/model/model.ts";
+import {type CharacterEquipmentGroup, type EquipmentId} from "@/model/modelData.ts";
+import {model} from "@/model/model.ts";
 import CharacterEquipmentSlot from "@/components/characters/characterPage/equipment/CharacterEquipmentSlot.vue";
-import {getEquipment, getEquipmentGroup, getEquipmentType} from "@/model/getters.ts";
 import {computed, ref} from "vue";
 
 const emit = defineEmits<{
@@ -9,9 +9,9 @@ const emit = defineEmits<{
 }>();
 
 const groupModel = defineModel<CharacterEquipmentGroup>({required: true});
-const selectedGroup = ref(getEquipmentGroup(groupModel.value.groupId)!);
+const selectedGroup = ref(model.getEquipmentGroup(groupModel.value.groupId)!);
 const selectedGroupName = ref(selectedGroup.value.name);
-const equipmentTypes = computed(() => selectedGroup.value.equipmentTypeIds.map(id => getEquipmentType(id)!));
+const equipmentTypes = computed(() => selectedGroup.value.equipmentTypeIds.map(id => model.getEquipmentType(id)!));
 const equipment = computed<(EquipmentId | null)[]>(() => {
   for (let i = 0; i < equipmentTypes.value.length; i += 1) {
     if (groupModel.value.equipment.length <= i) {
@@ -24,9 +24,9 @@ const equipment = computed<(EquipmentId | null)[]>(() => {
       continue;
     }
 
-    const eq = getEquipment(equipmentId);
+    const eq = model.getEquipment(equipmentId);
     const type = equipmentTypes.value[i];
-    if (eq.typeId !== type.id) {
+    if (eq?.typeId !== type.id) {
       groupModel.value.equipment[i] = null;
     }
   }
@@ -35,7 +35,7 @@ const equipment = computed<(EquipmentId | null)[]>(() => {
 });
 
 function updateGroup() {
-  selectedGroup.value = model.equipmentGroups.find(group => group.name === selectedGroupName.value)!;
+  selectedGroup.value = model.data.equipmentGroups.find(group => group.name === selectedGroupName.value)!;
   groupModel.value.groupId = selectedGroup.value.id;
 }
 
@@ -53,7 +53,7 @@ function onClickSlot(index: number) {
   >
     <option disabled value="">Select group</option>
     <option
-        v-for="group in model.equipmentGroups"
+        v-for="group in model.data.equipmentGroups"
         :key="group.id"
     >
       {{ group.name }}

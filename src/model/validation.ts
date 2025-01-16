@@ -1,6 +1,7 @@
 import type {TreeToken} from "@/calculator/types.ts";
 import {parseAndValidate} from "@/calculator/utils.ts";
-import {model, type Stat} from "@/model/model.ts";
+import {type Stat} from "@/model/modelData.ts";
+import {model} from "@/model/model.ts";
 import {hasWhiteSpace} from "@/utils/stringUtils.ts";
 
 
@@ -16,7 +17,7 @@ function validateName(oldName: string, name: string, names: string[], allowWhite
 }
 
 export function validateStat(oldName: string, name: string, minValue: number | undefined, maxValue: number | undefined): string[] {
-    const result = validateName(oldName, name, model.stats.map(stat => stat.name), false);
+    const result = validateName(oldName, name, model.data.stats.map(stat => stat.name), false);
 
     if (minValue !== undefined && maxValue !== undefined && minValue > maxValue) {
         result.push(`Max value (${maxValue}) must be greater than min value (${minValue})`);
@@ -29,9 +30,9 @@ export function validateTargetStat(oldName: string, name: string, formula: strin
     validationErrors: string[]
     tokenization: TreeToken[];
 } {
-    let result = validateName(oldName, name, model.targetStats.map(stat => stat.name), false);
+    let result = validateName(oldName, name, model.data.targetStats.map(stat => stat.name), false);
 
-    const {errors, missingVariables, tokenization} = parseAndValidate(formula, model.stats.map(stat => stat.name));
+    const {errors, missingVariables, tokenization} = parseAndValidate(formula, model.data.stats.map(stat => stat.name));
     result = result.concat(errors);
 
     if (missingVariables.length > 0) {
@@ -45,11 +46,11 @@ export function validateTargetStat(oldName: string, name: string, formula: strin
 }
 
 export function validateEquipmentType(oldName: string, name: string): string[] {
-    return validateName(oldName, name, model.equipmentTypes.map(type => type.name));
+    return validateName(oldName, name, model.data.equipmentTypes.map(type => type.name));
 }
 
 export function validateEquipmentGroup(oldName: string, name: string): string[] {
-    return validateName(oldName, name, model.equipmentGroups.map(group => group.name));
+    return validateName(oldName, name, model.data.equipmentGroups.map(group => group.name));
 }
 
 export function validateStatValue(stat: Stat, statValue: number): string[] {

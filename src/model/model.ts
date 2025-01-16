@@ -1,97 +1,96 @@
+import {
+    type Character,
+    type CharacterId,
+    type Equipment,
+    type EquipmentGroup,
+    type EquipmentGroupId,
+    type EquipmentId,
+    type EquipmentType,
+    type EquipmentTypeId,
+    type ModelData,
+    type Stat,
+    type StatId,
+    type StatValue
+} from "@/model/modelData.ts";
 import {reactive} from "vue";
-import type {TreeToken} from "@/calculator/types.ts";
 
-export type StatId = number;
-
-export interface Stat {
-    id: StatId;
-    name: string;
-    minValue: number | undefined;
-    maxValue: number | undefined;
+function createDefaultData(): ModelData {
+    return {
+        stats: [],
+        targetStats: [],
+        equipmentTypes: [],
+        equipmentGroups: [],
+        characters: [],
+        characterPresets: [],
+        equipment: [],
+        nextId: 0,
+    }
 }
 
-export interface TargetStat {
-    id: number;
-    name: string;
-    formula: string;
-    tokenization: TreeToken[];
+export class Model {
+    data: ModelData
+
+    constructor(data: ModelData | undefined = undefined) {
+        this.data = data ?? createDefaultData();
+    }
+
+    setData(data: ModelData) {
+        this.data = data;
+    }
+
+    createId() {
+        const id = this.data.nextId;
+        this.data.nextId += 1;
+        return id;
+    }
+
+    getStat(id: StatId): Stat | undefined {
+        return this.data.stats.find(stat => stat.id === id);
+    }
+
+    getDefaultStatValue(stat: Stat): number {
+        return stat.minValue ?? 0;
+    }
+
+    getEquipmentType(id: EquipmentTypeId): EquipmentType | undefined {
+        return this.data.equipmentTypes.find(type => type.id === id);
+    }
+
+    getEquipmentGroup(id: EquipmentGroupId): EquipmentGroup | undefined {
+        return this.data.equipmentGroups.find(group => group.id === id);
+    }
+
+    getEquipment(id: EquipmentId): Equipment | undefined {
+        return this.data.equipment.find(equipment => equipment.id === id);
+    }
+
+    getCharacter(id: CharacterId): Character | undefined {
+        return this.data.characters.find(character => character.id === id);
+    }
+
+    addStatValue(statValues: StatValue[], stat: Stat) {
+        statValues.push({
+            id: this.createId(),
+            statId: stat.id,
+            value: this.getDefaultStatValue(stat)
+        });
+    }
+
+    setAllCharacterStatValues(character: Character) {
+        const statValues = character.stats;
+        const missingStats: Stat[] = [];
+
+        for (const stat of this.data.stats) {
+            const statValue= statValues.find(statValue => statValue.statId === stat.id);
+            if (statValue === undefined) {
+                missingStats.push(stat);
+            }
+        }
+
+        for (const stat of missingStats) {
+            this.addStatValue(statValues, stat);
+        }
+    }
 }
 
-export type EquipmentTypeId = number;
-
-export interface EquipmentType {
-    id: EquipmentTypeId;
-    name: string;
-}
-
-export type EquipmentId = number;
-
-export interface Equipment {
-    id: EquipmentId;
-    typeId: EquipmentTypeId;
-    name: string;
-    imageSrc: string;
-    stats: StatValue[];
-}
-
-export type EquipmentGroupId = number;
-
-export interface EquipmentGroup {
-    id: EquipmentGroupId;
-    name: string;
-    equipmentTypeIds: EquipmentTypeId[];
-}
-
-export type CharacterEquipmentGroupId = number;
-
-export interface CharacterEquipmentGroup {
-    id: CharacterEquipmentGroupId;
-    groupId: EquipmentGroupId;
-    equipment: (EquipmentId | null)[];
-}
-
-export type StatValueId = number;
-
-export interface StatValue {
-    id: StatValueId;
-    statId: StatId;
-    value: number;
-}
-
-export type CharacterId = number;
-
-export interface Character {
-    id: CharacterId;
-    name: string;
-    imageSrc: string;
-    stats: StatValue[];
-    equipment: CharacterEquipmentGroup[];
-}
-
-export interface Model {
-    stats: Stat[],
-    targetStats: TargetStat[],
-    equipmentTypes: EquipmentType[],
-    equipmentGroups: EquipmentGroup[],
-    characters: Character[],
-    characterPresets: Character[],
-    equipment: Equipment[],
-    nextId: number,
-}
-
-export const model = reactive<Model>({
-    stats: [],
-    targetStats: [],
-    equipmentTypes: [],
-    equipmentGroups: [],
-    characters: [],
-    characterPresets: [],
-    equipment: [],
-    nextId: 0,
-});
-
-export function createId(): number {
-    const id = model.nextId;
-    model.nextId += 1;
-    return id;
-}
+export const model = reactive(new Model());

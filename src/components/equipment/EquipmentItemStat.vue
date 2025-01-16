@@ -2,9 +2,9 @@
 import RemoveButton from "@/components/common/RemoveButton.vue";
 import {computed, ref} from "vue";
 import {validateStatValue} from "@/model/validation.ts";
-import {type Equipment, model, type StatValue} from "@/model/model.ts";
+import {type Equipment, type StatValue} from "@/model/modelData.ts";
+import {model} from "@/model/model.ts";
 import ErrorsBlock from "@/components/common/ErrorsBlock.vue";
-import {getStat} from "@/model/getters.ts";
 
 const props = defineProps<{
   index: number;
@@ -17,7 +17,7 @@ defineEmits<{
   (name: "remove", index: number): void
 }>();
 
-const selectedStatName = ref(getStat(statModel.value.statId)!.name);
+const selectedStatName = ref(model.getStat(statModel.value.statId)!.name);
 
 const value = ref(statModel.value.value);
 const errors = ref<string[]>([]);
@@ -26,7 +26,7 @@ function validate(selectEvent: Event | undefined = undefined) {
   const statName = selectEvent === undefined
       ? selectedStatName.value
       : (selectEvent.target as unknown as { value: string }).value;
-  const stat = model.stats.find(stat => stat.name === statName)!;
+  const stat = model.data.stats.find(stat => stat.name === statName)!;
 
   const validationErrors = validateStatValue(stat, value.value);
   errors.value = validationErrors;
@@ -37,7 +37,7 @@ function validate(selectEvent: Event | undefined = undefined) {
   }
 }
 
-const unusedStatsOrCurrent = computed(() => model.stats.filter(st => props.parentModel.stats.find(s => s.statId === st.id) === undefined || st.name === selectedStatName.value));
+const unusedStatsOrCurrent = computed(() => model.data.stats.filter(st => props.parentModel.stats.find(s => s.statId === st.id) === undefined || st.name === selectedStatName.value));
 </script>
 
 <template>

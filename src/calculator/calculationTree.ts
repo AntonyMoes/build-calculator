@@ -13,7 +13,7 @@ const operationDictionary: {
 export type VariableDictionary = Map<string, number>;
 
 export abstract class Node {
-    abstract calculate(dictionary: VariableDictionary): number;
+    abstract calculate(dictionary: VariableDictionary | undefined): number;
 
     abstract getSting(parentNode: Node | undefined): string;
 
@@ -32,7 +32,7 @@ export class OperatorNode extends Node {
         this.operator = operator;
     }
 
-    calculate(dictionary: VariableDictionary): number {
+    calculate(dictionary: VariableDictionary | undefined = undefined): number {
         const operation = operationDictionary[this.operator];
         const left = this.left.calculate(dictionary);
         const right = this.right.calculate(dictionary);
@@ -61,7 +61,7 @@ export class ConstantNode extends Node {
         this.constant = constant;
     }
 
-    calculate(dictionary: VariableDictionary): number {
+    calculate(dictionary: VariableDictionary | undefined = undefined): number {
         return this.constant;
     }
 
@@ -86,8 +86,10 @@ export class VariableNode extends Node {
         this.multiplier = multiplier ?? 1;
     }
 
-    calculate(dictionary: VariableDictionary): number {
-        return dictionary.has(this.variable) ? this.multiplier * (dictionary.get(this.variable)! ** this.power) : 0;
+    calculate(dictionary: VariableDictionary | undefined): number {
+        return dictionary !== undefined && dictionary.has(this.variable)
+            ? this.multiplier * (dictionary.get(this.variable)! ** this.power)
+            : 0;
     }
 
     getSting(parentNode: Node | undefined): string {

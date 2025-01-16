@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import SelectedImage from "@/components/common/SelectedImage.vue";
-import type {Equipment} from "@/model/model.ts";
+import type {Equipment} from "@/model/modelData.ts";
 import {computed} from "vue";
 import {getDisplayName} from "@/components/characters/characterPage/utils.ts";
 

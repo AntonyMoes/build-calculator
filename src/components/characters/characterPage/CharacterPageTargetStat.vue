@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import type {Character, TargetStat} from "@/model/model.ts";
-import {getTargetStatCalculation} from "@/model/getters.ts";
+import type {Character, TargetStat} from "@/model/modelData.ts";
 import {computed, type ComputedRef} from "vue";
 import {formatValue} from "@/components/characters/characterPage/utils.ts";
 import type {DifferentiationTree} from "@/calculator/differentiationTree.ts";
+import {getTargetStatCalculation} from "@/model/calculation.ts";
+import {model} from "@/model/model.ts";
 
 const props = defineProps<{
   targetStat: TargetStat,
@@ -15,12 +16,8 @@ defineEmits<{
   (name: "toggleStat", stat: TargetStat, calculationTree: DifferentiationTree, variables: ComputedRef<Map<string, number>>): void;
 }>();
 
-// const valueGradient = computed(() => calculateTargetStat(props.targetStat, props.character));
-// const value = computed(() => formatValue(valueGradient.value[0]));
-// const gradient = computed(() => valueGradient.value[1]);
-const treeMap = computed(() => getTargetStatCalculation(props.targetStat, props.character));
+const treeMap = computed(() => getTargetStatCalculation(model, props.targetStat, props.character));
 const value = computed(() => formatValue(treeMap.value[0].calculate(treeMap.value[1].value)));
-// const gradient = computed(() => treeMap.value[0].calculateGradient(treeMap.value[1].value));
 </script>
 
 <template>

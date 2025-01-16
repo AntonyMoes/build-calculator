@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import SettingsCard from "@/components/settings/common/SettingsCard.vue";
-import {type EquipmentGroup, model} from "@/model/model.ts";
-import {getEquipmentType} from "@/model/getters.ts";
+import {type EquipmentGroup} from "@/model/modelData.ts";
+import {model} from "@/model/model.ts";
 import {computed} from "vue";
 
 const props = defineProps<{
@@ -14,7 +14,7 @@ defineEmits<{
   (name: "select", index: number, value: string): void
 }>();
 
-const name = computed(() => getEquipmentType(props.parentModel.equipmentTypeIds[props.index])!.name);
+const name = computed(() => model.getEquipmentType(props.parentModel.equipmentTypeIds[props.index])!.name);
 
 function nameFromEvent(event: Event) {
   return (event.target as unknown as {value: string}).value;
@@ -31,7 +31,7 @@ function nameFromEvent(event: Event) {
       >
         <option disabled value="">Select type</option>
         <option
-            v-for="type in model.equipmentTypes"
+            v-for="type in model.data.equipmentTypes"
             :key="type.id"
         >
           {{ type.name }}

@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import SettingsCard from "@/components/settings/common/SettingsCard.vue";
 import {ref} from "vue";
-import {type EquipmentGroup, type EquipmentGroupId, model} from "@/model/model.ts";
+import {type EquipmentGroup, type EquipmentGroupId} from "@/model/modelData.ts";
+import {model} from "@/model/model.ts";
 import {validateEquipmentGroup} from "@/model/validation.ts";
 import EquipmentGroupTypeItem from "@/components/settings/equipmentGroups/EquipmentGroupTypeItem.vue";
 
@@ -15,12 +16,12 @@ const name = ref(groupModel.value.name);
 const errors = ref<string[]>([]);
 
 function addItem() {
-  if (model.equipmentTypes.length === 0) {
+  if (model.data.equipmentTypes.length === 0) {
     alert("No equipment type to add.");
     return;
   }
 
-  groupModel.value.equipmentTypeIds.push(model.equipmentTypes[0].id);
+  groupModel.value.equipmentTypeIds.push(model.data.equipmentTypes[0].id);
 }
 
 function removeItem(index: number) {
@@ -28,7 +29,7 @@ function removeItem(index: number) {
 }
 
 function select(index: number, value: string) {
-  groupModel.value.equipmentTypeIds[index] = model.equipmentTypes.find(type => type.name === value)!.id;
+  groupModel.value.equipmentTypeIds[index] = model.data.equipmentTypes.find(type => type.name === value)!.id;
 }
 
 function validate() {

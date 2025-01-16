@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import SettingsCard from "@/components/settings/common/SettingsCard.vue";
 import {ref} from "vue";
-import {type TargetStat} from "@/model/model.ts";
+import {type TargetStat} from "@/model/modelData.ts";
 import {validateTargetStat} from "@/model/validation.ts";
 
 const model = defineModel<TargetStat>({required: true});

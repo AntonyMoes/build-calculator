@@ -1,25 +1,26 @@
 <script setup lang="ts">
 import SettingsGroup from "@/components/settings/common/SettingsGroup.vue";
-import {createId, type EquipmentGroupId, model} from "@/model/model.ts";
+import {type EquipmentGroupId} from "@/model/modelData.ts";
+import {model} from "@/model/model.ts";
 import EquipmentGroup from "@/components/settings/equipmentGroups/EquipmentGroup.vue";
 
 function add() {
   let newName = "equipment-group-new";
-  while (model.equipmentGroups.find(group => group.name === newName) !== undefined) {
+  while (model.data.equipmentGroups.find(group => group.name === newName) !== undefined) {
     newName += "-new";
   }
 
-  model.equipmentGroups.push({
-    id: createId(),
+  model.data.equipmentGroups.push({
+    id: model.createId(),
     name: newName,
     equipmentTypeIds: []
   })
 }
 
 function remove(id: EquipmentGroupId) {
-  const index = model.equipmentGroups.indexOf(model.equipmentGroups.find(group => group.id === id)!);
+  const index = model.data.equipmentGroups.indexOf(model.data.equipmentGroups.find(group => group.id === id)!);
   if (index > -1) {
-    model.equipmentGroups.splice(index, 1);
+    model.data.equipmentGroups.splice(index, 1);
   }
 }
 </script>
@@ -32,7 +33,7 @@ function remove(id: EquipmentGroupId) {
       </template>
       <template #items>
         <EquipmentGroup
-            v-for="equipmentGroup in model.equipmentGroups"
+            v-for="equipmentGroup in model.data.equipmentGroups"
             :key="equipmentGroup.id"
             :model-value="equipmentGroup"
             @remove="remove"

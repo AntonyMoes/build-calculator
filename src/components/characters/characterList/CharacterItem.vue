@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import CharacterSlot from "@/components/characters/characterList/CharacterSlot.vue";
-import type {Character, CharacterId} from "@/model/model.ts";
+import type {Character, CharacterId} from "@/model/modelData.ts";
 import SelectedImage from "@/components/common/SelectedImage.vue";
 
 defineEmits<{
