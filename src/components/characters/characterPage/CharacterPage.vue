@@ -21,15 +21,17 @@ import type {DifferentiationTree} from "@/calculator/differentiationTree.ts";
 import CharacterPageTargetStatGradientItem
   from "@/components/characters/characterPage/CharacterPageTargetStatGradientItem.vue";
 import {model} from "@/model/model.ts";
+import CharacterPageLevel from "@/components/characters/characterPage/CharacterPageLevel.vue";
 
 const characterModel = defineModel<Character>({required: true});
 
 const rerenderKey = getRerenderKey();
 
+const currentLevel = computed(() => model.getCurrentCharacterLevel(characterModel.value));
 const statValues = computed<StatValue[]>(() => {
-  model.setAllCharacterStatValues(characterModel.value);
+  model.setAllStatValues(currentLevel.value.stats);
   targetStatInfoShown.value = false;
-  return characterModel.value.stats;
+  return currentLevel.value.stats;
 })
 
 async function onSelectImage(image: File) {
@@ -109,6 +111,8 @@ function onSelectEquipment(equipment: Equipment | null) {
             v-model="characterModel.name"
         />
       </div>
+
+      <CharacterPageLevel :model-value="characterModel"/>
 
       <div class="character-page-stats">
         <CharacterPageGroup class="character-page-stats-group">

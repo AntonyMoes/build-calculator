@@ -13,13 +13,7 @@ function onCharacterClick(id: CharacterId) {
 }
 
 function onNewCharacterClick() {
-  model.data.characters.push({
-    id: model.createId(),
-    name: "character-new",
-    imageSrc: "",
-    stats: [],
-    equipment: []
-  })
+  model.addCharacter();
 }
 </script>
 

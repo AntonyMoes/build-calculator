@@ -57,13 +57,22 @@ export interface StatValue {
     value: number;
 }
 
+export type CharacterStatLevelId = number;
+
+export interface CharacterStatLevel {
+    id: CharacterStatLevelId;
+    name: string;
+    stats: StatValue[];
+}
+
 export type CharacterId = number;
 
 export interface Character {
     id: CharacterId;
     name: string;
     imageSrc: string;
-    stats: StatValue[];
+    currentLevelIndex: number;
+    levels: CharacterStatLevel[];
     equipment: CharacterEquipmentGroup[];
 }
 

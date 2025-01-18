@@ -1,6 +1,7 @@
 import {
     type Character,
     type CharacterId,
+    type CharacterStatLevel,
     type Equipment,
     type EquipmentGroup,
     type EquipmentGroupId,
@@ -76,8 +77,20 @@ export class Model {
         });
     }
 
-    setAllCharacterStatValues(character: Character) {
-        const statValues = character.stats;
+    getCurrentCharacterLevel(character: Character): CharacterStatLevel {
+        return character.levels[character.currentLevelIndex];
+    }
+
+    shiftCurrentCharacterLevel(character: Character, shift: number) {
+        const index = character.currentLevelIndex;
+        const newIndex = index + shift;
+
+        const temp = character.levels[index];
+        character.levels[index] = character.levels[newIndex];
+        character.levels[newIndex] = temp;
+    }
+
+    setAllStatValues(statValues: StatValue[]) {
         const missingStats: Stat[] = [];
 
         for (const stat of this.data.stats) {
@@ -90,6 +103,37 @@ export class Model {
         for (const stat of missingStats) {
             this.addStatValue(statValues, stat);
         }
+    }
+
+    addCharacter() {
+        const character: Character = {
+            id: this.createId(),
+            name: "character-new",
+            imageSrc: "",
+            currentLevelIndex: 0,
+            levels: [],
+            equipment: []
+        };
+
+        this.addLevel(character, "1");
+        this.data.characters.push(character);
+    }
+
+    addLevel(character: Character, name: string, at: number | undefined = undefined, copyStats: CharacterStatLevel | undefined = undefined) {
+        const index = at ?? character.levels.length;
+        const newStats: StatValue[] = copyStats?.stats.map(statValue => {
+            return {
+                id: this.createId(),
+                statId: statValue.statId,
+                value: statValue.value
+            }
+        }) ?? [];
+
+        character.levels.splice(index, 0, {
+            id: model.createId(),
+            name: name,
+            stats: newStats
+        });
     }
 }
 

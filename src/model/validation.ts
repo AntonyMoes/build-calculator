@@ -1,6 +1,6 @@
 import type {TreeToken} from "@/calculator/types.ts";
 import {parseAndValidate} from "@/calculator/utils.ts";
-import {type Stat} from "@/model/modelData.ts";
+import {type Character, type CharacterStatLevel, type Stat} from "@/model/modelData.ts";
 import {model} from "@/model/model.ts";
 import {hasWhiteSpace} from "@/utils/stringUtils.ts";
 
@@ -65,4 +65,9 @@ export function validateStatValue(stat: Stat, statValue: number): string[] {
     }
 
     return result;
+}
+
+export function validateCharacterLevel(character: Character, newName: string, level: CharacterStatLevel | undefined = undefined): string[] {
+    const oldName = level?.name ?? "";
+    return validateName(oldName, newName, character.levels.map(level => level.name));
 }
