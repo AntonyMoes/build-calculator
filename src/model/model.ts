@@ -22,7 +22,6 @@ function createDefaultData(): ModelData {
         equipmentTypes: [],
         equipmentGroups: [],
         characters: [],
-        characterPresets: [],
         equipment: [],
         nextId: 0,
     }

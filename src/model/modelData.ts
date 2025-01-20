@@ -82,24 +82,6 @@ export interface ModelData {
     equipmentTypes: EquipmentType[],
     equipmentGroups: EquipmentGroup[],
     characters: Character[],
-    characterPresets: Character[],
     equipment: Equipment[],
     nextId: number,
 }
-
-// export const model = reactive<ModelData>({
-//     stats: [],
-//     targetStats: [],
-//     equipmentTypes: [],
-//     equipmentGroups: [],
-//     characters: [],
-//     characterPresets: [],
-//     equipment: [],
-//     nextId: 0,
-// });
-
-// export function createId(): number {
-//     const id = model.nextId;
-//     model.nextId += 1;
-//     return id;
-// }
