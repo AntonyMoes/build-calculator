@@ -9,6 +9,7 @@ import EquipmentTypes from "@/components/settings/equipmentTypes/EquipmentTypes.
 import EquipmentGroups from "@/components/settings/equipmentGroups/EquipmentGroups.vue";
 import type {ModelData} from "@/model/modelData.ts";
 import {validateAndFixModelData} from "@/model/validation.ts";
+import {type Preset, presets} from "@/model/presetData.ts";
 
 const rerenderKey = getRerenderKey();
 
@@ -29,7 +30,18 @@ async function onLoadFileSelected() {
   loadInput.value!.files = emptyInput.value!.files;
   const text = await file.text();
 
-  const result = JSON.parse(text) as ModelData;
+  setData(text);
+}
+
+async function loadPreset(preset: Preset) {
+  let result = await fetch(preset.location);
+  let resultText = await result.text();
+
+  setData(resultText);
+}
+
+function setData(data: string) {
+  const result = JSON.parse(data) as ModelData;
   const errors = validateAndFixModelData(result);
   if (errors.length !== 0) {
     alert(errors.join("\n"));
@@ -39,14 +51,35 @@ async function onLoadFileSelected() {
   model.setData(result);
   rerenderKey.rerender();
 }
+
+function clear() {
+  const confirmed = confirm("You sure?");
+  if (!confirmed) {
+    return;
+  }
+
+  model.setData();
+}
 </script>
 
 <template>
   <div class="page-container settings" :key="rerenderKey.key.value">
-    <Stats/>
-    <TargetStats/>
-    <EquipmentTypes/>
-    <EquipmentGroups/>
+    <div class="settings-groups">
+      <Stats/>
+      <TargetStats/>
+      <EquipmentTypes/>
+      <EquipmentGroups/>
+    </div>
+
+    <div class="presets-block">
+      <input
+          type="button"
+          class="preset-button"
+          v-for="preset of presets"
+          :value="preset.name"
+          @click="loadPreset(preset)"
+      />
+    </div>
 
     <div class="save-block">
       <input
@@ -73,16 +106,50 @@ async function onLoadFileSelected() {
           type="file"
           ref="emptyInput"
       />
+      <input
+          class="save-button"
+          type="button"
+          value="Clear"
+          @click="clear"
+      />
     </div>
   </div>
 </template>
 
 <style scoped>
-.settings {
+
+.settings-groups {
+  margin-right: 100px;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   gap: 40px;
+}
+
+.settings {
+
+}
+
+.presets-block {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  position: fixed;
+  right: 0;
+  top: 0;
+
+  padding: 5px;
+}
+
+.preset-button {
+  width: 100px;
+  height: 40px;
+}
+
+.save-button {
+  width: 100px;
+  height: 40px;
 }
 
 .save-block {
@@ -95,11 +162,6 @@ async function onLoadFileSelected() {
   bottom: 0;
 
   padding: 5px;
-}
-
-.save-button {
-  width: 100px;
-  height: 40px;
 }
 
 .save-secret {

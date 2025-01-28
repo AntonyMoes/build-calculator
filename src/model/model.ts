@@ -14,7 +14,7 @@ import {
     type StatId,
     type StatValue
 } from "@/model/modelData.ts";
-import {reactive} from "vue";
+import {reactive, watch} from "vue";
 
 function createDefaultData(): ModelData {
     return {
@@ -28,6 +28,21 @@ function createDefaultData(): ModelData {
     }
 }
 
+const SAVE_KEY = "calculator-model-key";
+
+function saveModel() {
+    const stringData = JSON.stringify(model.data);
+    window.localStorage.setItem(SAVE_KEY, stringData);
+}
+
+function loadModel() {
+    const stringData = window.localStorage.getItem(SAVE_KEY);
+    if (stringData !== null) {
+        const data = JSON.parse(stringData) as ModelData;
+        model.setData(data);
+    }
+}
+
 export class Model {
     data: ModelData
 
@@ -35,8 +50,8 @@ export class Model {
         this.data = data ?? createDefaultData();
     }
 
-    setData(data: ModelData) {
-        this.data = data;
+    setData(data: ModelData | undefined = undefined) {
+        this.data = data ?? createDefaultData();
     }
 
     createId() {
@@ -160,3 +175,6 @@ export class Model {
 }
 
 export const model = reactive(new Model());
+
+loadModel();
+watch(model, saveModel);
