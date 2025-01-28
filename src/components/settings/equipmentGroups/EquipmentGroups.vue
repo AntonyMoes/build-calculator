@@ -18,7 +18,7 @@ function add() {
 }
 
 function remove(id: EquipmentGroupId) {
-  const index = model.data.equipmentGroups.indexOf(model.data.equipmentGroups.find(group => group.id === id)!);
+  const index = model.data.equipmentGroups.findIndex(group => group.id === id);
   if (index > -1) {
     model.data.equipmentGroups.splice(index, 1);
   }

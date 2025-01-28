@@ -3,11 +3,12 @@ import {computed} from "vue";
 import {formatValue} from "@/components/characters/characterPage/utils.ts";
 import type {Equipment, StatId} from "@/model/modelData.ts";
 import {model} from "@/model/model.ts";
+import {hasValue, type Optional} from "@/utils/optional.ts";
 
 const props = defineProps<{
   statId: StatId;
-  equipped: Equipment | null;
-  selected: Equipment | null;
+  equipped: Optional<Equipment>;
+  selected: Optional<Equipment>;
 }>();
 
 const stat = computed(() => model.getStat(props.statId)!);
@@ -17,8 +18,8 @@ const delta = computed(() => selectedValue.value - equippedValue.value);
 const increase = computed(() => delta.value > 0);
 const decrease = computed(() => delta.value < 0);
 
-function getValue(equipment: Equipment | null): number {
-  if (equipment !== null) {
+function getValue(equipment: Optional<Equipment>): number {
+  if (hasValue(equipment)) {
     const statValue = equipment.stats.find(s => s.statId === stat.value.id);
     if (statValue !== undefined) {
       return statValue.value;

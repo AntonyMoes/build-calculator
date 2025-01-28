@@ -2,6 +2,8 @@
 import {
   type Character,
   type CharacterEquipmentGroup as CharEquipmentGroup,
+  type CharacterEquipmentGroupId,
+  type CharacterStatGroupId,
   type Equipment,
   type EquipmentId,
   type EquipmentTypeId,
@@ -22,16 +24,18 @@ import CharacterPageTargetStatGradientItem
   from "@/components/characters/characterPage/CharacterPageTargetStatGradientItem.vue";
 import {model} from "@/model/model.ts";
 import CharacterPageLevel from "@/components/characters/characterPage/CharacterPageLevel.vue";
+import {hasValue, type Optional} from "@/utils/optional.ts";
+import CharacterStatGroup from "@/components/characters/characterPage/CharacterStatGroup.vue";
 
 const characterModel = defineModel<Character>({required: true});
 
 const rerenderKey = getRerenderKey();
 
-const currentLevel = computed(() => model.getCurrentCharacterLevel(characterModel.value));
+const currentLevel = computed(() => model.getCurrentLevel(characterModel.value));
 const statValues = computed<StatValue[]>(() => {
   model.setAllStatValues(currentLevel.value.stats);
   targetStatInfoShown.value = false;
-  return currentLevel.value.stats;
+  return currentLevel.value.stats.filter(statValue => model.getStat(statValue.statId)!.shownCharacterStat);
 })
 
 async function onSelectImage(image: File) {
@@ -71,11 +75,18 @@ function addEquipmentGroup() {
   });
 }
 
+function removeEquipmentGroup(groupId: CharacterEquipmentGroupId) {
+  const index = characterModel.value.equipment.findIndex(group => group.id === groupId);
+  if (index > -1) {
+    characterModel.value.equipment.splice(index, 1);
+  }
+}
+
 const equipmentPopupOpen = ref(false);
 const equipmentPopupGroup = ref<CharEquipmentGroup>();
 const equipmentPopupSlotIndex = ref(-1);
 const equipmentPopupType = ref<EquipmentTypeId>(-1);
-const equipmentPopupEquipped = ref<EquipmentId | null>(null);
+const equipmentPopupEquipped = ref<Optional<EquipmentId>>(null);
 
 function onEquipmentPopupClose() {
   equipmentPopupOpen.value = false;
@@ -89,8 +100,20 @@ function onSelectEquipmentSlot(group: CharEquipmentGroup, slotIndex: number) {
   equipmentPopupOpen.value = true;
 }
 
-function onSelectEquipment(equipment: Equipment | null) {
-  equipmentPopupGroup.value!.equipment[equipmentPopupSlotIndex.value] = equipment !== null ? equipment.id : null;
+function onSelectEquipment(equipment: Optional<Equipment>) {
+  equipmentPopupGroup.value!.equipment[equipmentPopupSlotIndex.value] = hasValue(equipment) ? equipment.id : null;
+}
+
+
+function addStatGroup() {
+  model.addStatGroup(characterModel.value);
+}
+
+function removeStatGroup(groupId: CharacterStatGroupId) {
+  const index = characterModel.value.statGroups.findIndex(group => group.id === groupId);
+  if (index > -1) {
+    characterModel.value.statGroups.splice(index, 1);
+  }
 }
 </script>
 
@@ -138,7 +161,7 @@ function onSelectEquipment(equipment: Equipment | null) {
                 :key="targetStat.id"
                 :targetStat="targetStat"
                 :character="characterModel"
-                :expanded="targetStatInfoShown && targetStatInfoStat === targetStatInfoStat"
+                :expanded="targetStatInfoShown && targetStat === targetStatInfoStat"
                 @toggleStat="onToggleStat"
             />
           </template>
@@ -157,6 +180,7 @@ function onSelectEquipment(equipment: Equipment | null) {
                 :key="group.id"
                 :model-value="group"
                 @selectSlot="onSelectEquipmentSlot"
+                @remove="removeEquipmentGroup"
             />
 
             <CharacterEquipmentPopup
@@ -173,6 +197,31 @@ function onSelectEquipment(equipment: Equipment | null) {
             type="button"
             value="Add equipment group"
             @click="addEquipmentGroup"
+        />
+      </div>
+
+      <div class="character-page-leveled-stats">
+        <CharacterPageGroup>
+          <template #name>
+            Leveled stat groups
+          </template>
+
+          <template #content>
+            <div class="character-page-stat-groups">
+              <CharacterStatGroup
+                  v-for="group of characterModel.statGroups"
+                  :key="group.id"
+                  :model-value="group"
+                  @remove="removeStatGroup"
+              />
+            </div>
+          </template>
+        </CharacterPageGroup>
+
+        <input
+            type="button"
+            value="Add stat group"
+            @click="addStatGroup"
         />
       </div>
     </div>
@@ -243,5 +292,11 @@ function onSelectEquipment(equipment: Equipment | null) {
 .character-page-image {
   width: 200px;
   height: 200px;
+}
+
+.character-page-stat-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 </style>

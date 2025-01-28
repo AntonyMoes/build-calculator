@@ -13,6 +13,7 @@ defineEmits<{
 
 const name = ref(model.value.name);
 const errors = ref<string[]>([]);
+const shownCharacterStat = ref(model.value.shownCharacterStat);
 const minValue = optional(0, model.value.minValue);
 const maxValue = optional(0, model.value.maxValue);
 
@@ -24,6 +25,7 @@ function validate() {
 
   if (validationErrors.length === 0) {
     model.value.name = name.value;
+    model.value.shownCharacterStat = shownCharacterStat.value;
     model.value.minValue = min;
     model.value.maxValue = max;
   }
@@ -39,6 +41,14 @@ function validate() {
           v-model="name"
           @input="validate"
       />
+      <div class="stat-block">
+        <label for="">Shown character stat: </label>
+        <input
+            type="checkbox"
+            v-model="shownCharacterStat"
+            @input="validate"
+        />
+      </div>
       <div class="stat-block">
         <p>Min: </p>
         <input

@@ -1,6 +1,7 @@
 import {
     type Character,
     type CharacterId,
+    type CharacterStatGroup,
     type CharacterStatLevel,
     type Equipment,
     type EquipmentGroup,
@@ -76,17 +77,17 @@ export class Model {
         });
     }
 
-    getCurrentCharacterLevel(character: Character): CharacterStatLevel {
-        return character.levels[character.currentLevelIndex];
+    getCurrentLevel(levelOwner: Character | CharacterStatGroup): CharacterStatLevel {
+        return levelOwner.levels[levelOwner.currentLevelIndex];
     }
 
-    shiftCurrentCharacterLevel(character: Character, shift: number) {
-        const index = character.currentLevelIndex;
+    shiftCurrentLevel(levelOwner: Character | CharacterStatGroup, shift: number) {
+        const index = levelOwner.currentLevelIndex;
         const newIndex = index + shift;
 
-        const temp = character.levels[index];
-        character.levels[index] = character.levels[newIndex];
-        character.levels[newIndex] = temp;
+        const temp = levelOwner.levels[index];
+        levelOwner.levels[index] = levelOwner.levels[newIndex];
+        levelOwner.levels[newIndex] = temp;
     }
 
     setAllStatValues(statValues: StatValue[]) {
@@ -111,15 +112,16 @@ export class Model {
             imageSrc: "",
             currentLevelIndex: 0,
             levels: [],
-            equipment: []
+            equipment: [],
+            statGroups: []
         };
 
         this.addLevel(character, "1");
         this.data.characters.push(character);
     }
 
-    addLevel(character: Character, name: string, at: number | undefined = undefined, copyStats: CharacterStatLevel | undefined = undefined) {
-        const index = at ?? character.levels.length;
+    addLevel(statOwner: Character | CharacterStatGroup, name: string, at: number | undefined = undefined, copyStats: CharacterStatLevel | undefined = undefined) {
+        const index = at ?? statOwner.levels.length;
         const newStats: StatValue[] = copyStats?.stats.map(statValue => {
             return {
                 id: this.createId(),
@@ -128,11 +130,32 @@ export class Model {
             }
         }) ?? [];
 
-        character.levels.splice(index, 0, {
+        statOwner.levels.splice(index, 0, {
             id: model.createId(),
             name: name,
             stats: newStats
         });
+    }
+
+    addStatGroup(character: Character) {
+        const statGroup: CharacterStatGroup = {
+            id: this.createId(),
+            name: "stat-group-new",
+            currentLevelIndex: 0,
+            levels: []
+        };
+
+        this.addLevel(statGroup, "0");
+        character.statGroups.push(statGroup);
+    }
+
+    removeStatFromLevels(statOwner: Character | CharacterStatGroup, statId: StatId) {
+        for (const level of statOwner.levels) {
+            const index = level.stats.findIndex(statValue => statValue.statId === statId);
+            if (index > -1) {
+                level.stats.splice(index, 1);
+            }
+        }
     }
 }
 

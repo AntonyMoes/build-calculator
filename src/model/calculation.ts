@@ -8,6 +8,7 @@ import {
 import {DifferentiationTree} from "@/calculator/differentiationTree.ts";
 import {computed, type ComputedRef} from "vue";
 import type {Model} from "@/model/model.ts";
+import {hasValue} from "@/utils/optional.ts";
 
 export function getTargetStatCalculation(model: Model, targetStat: TargetStat, character: Character, characterLevel: CharacterStatLevel): [DifferentiationTree, ComputedRef<Map<string, number>>] {
     const tree = new DifferentiationTree(targetStat.tokenization);
@@ -31,7 +32,7 @@ export function getTargetStatCalculation(model: Model, targetStat: TargetStat, c
 
             for (const group of character.equipment) {
                 for (const equipmentId of group.equipment) {
-                    if (equipmentId === null) {
+                    if (!hasValue(equipmentId)) {
                         continue;
                     }
 
@@ -71,11 +72,11 @@ function aggregateStatValue(model: Model, accumulator: StatValue, value: StatVal
 }
 
 function clampStatValue(statValue: StatValue, stat: Stat) {
-    if (stat.minValue !== undefined) {
+    if (hasValue(stat.minValue)) {
         statValue.value = Math.max(statValue.value, stat.minValue);
     }
 
-    if (stat.maxValue !== undefined) {
+    if (hasValue(stat.maxValue)) {
         statValue.value = Math.min(statValue.value, stat.maxValue);
     }
 }

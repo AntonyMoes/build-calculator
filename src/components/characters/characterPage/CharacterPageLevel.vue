@@ -1,34 +1,35 @@
 <script setup lang="ts">
-import type {Character} from "@/model/modelData.ts";
+import type {Character, CharacterStatGroup} from "@/model/modelData.ts";
 import {computed, ref, watch} from "vue";
-import {validateCharacterLevel} from "@/model/validation.ts";
+import {validateLevel} from "@/model/validation.ts";
 import {model} from "@/model/model.ts";
 import ErrorsBlock from "@/components/common/ErrorsBlock.vue";
 import {getRerenderKey} from "@/utils/rerenderKey.ts";
 
-const characterModel = defineModel<Character>({required: true});
+const levelOwnerModel = defineModel<Character | CharacterStatGroup>({required: true});
 
 const rerenderKey = getRerenderKey();
 
 const inputIndex = ref<string>("");
-const currentLevel = computed(() => model.getCurrentCharacterLevel(characterModel.value));
-const isFirst = computed(() => characterModel.value.currentLevelIndex == 0);
-const isLast = computed(() => characterModel.value.currentLevelIndex == characterModel.value.levels.length - 1);
+const currentLevel = computed(() => model.getCurrentLevel(levelOwnerModel.value));
+const isFirst = computed(() => levelOwnerModel.value.currentLevelIndex == 0);
+const isLast = computed(() => levelOwnerModel.value.currentLevelIndex == levelOwnerModel.value.levels.length - 1);
 const name = ref<string>("");
 const errors = ref<string[]>([]);
+const showMore = ref<boolean>(false);
 
 updateLevel();
 
 function updateLevel() {
-  inputIndex.value = characterModel.value.currentLevelIndex.toString();
+  inputIndex.value = levelOwnerModel.value.currentLevelIndex.toString();
   name.value = currentLevel.value.name;
   errors.value = [];
 }
 
-watch(computed(() => characterModel.value.currentLevelIndex), updateLevel);
+watch(computed(() => levelOwnerModel.value.currentLevelIndex), updateLevel);
 
 function validate() {
-  const validationErrors = validateCharacterLevel(characterModel.value, name.value, currentLevel.value);
+  const validationErrors = validateLevel(levelOwnerModel.value, name.value, currentLevel.value);
   errors.value = validationErrors;
 
   if (validationErrors.length === 0) {
@@ -37,17 +38,17 @@ function validate() {
 }
 
 function onSliderInput() {
-  characterModel.value.currentLevelIndex = Number(inputIndex.value);
+  levelOwnerModel.value.currentLevelIndex = Number(inputIndex.value);
 }
 
 function changeLevel(delta: number) {
-  characterModel.value.currentLevelIndex += delta;
+  levelOwnerModel.value.currentLevelIndex += delta;
 }
 
 function moveLevel(delta: number) {
-  model.shiftCurrentCharacterLevel(characterModel.value, delta);
+  model.shiftCurrentLevel(levelOwnerModel.value, delta);
   changeLevel(delta);
-  console.log(characterModel.value.levels);
+  console.log(levelOwnerModel.value.levels);
 }
 
 function createLevel() {
@@ -59,11 +60,11 @@ function createLevel() {
   let newName = "";
   do {
     newName = currentLevelName.replace(/[0-9.]+/, x => (Number(x) + delta).toString());
-    errors = validateCharacterLevel(characterModel.value, newName);
+    errors = validateLevel(levelOwnerModel.value, newName);
     delta += 1;
   } while (errors.length > 0);
 
-  model.addLevel(characterModel.value, newName, characterModel.value.currentLevelIndex + 1, currentLevel.value);
+  model.addLevel(levelOwnerModel.value, newName, levelOwnerModel.value.currentLevelIndex + 1, currentLevel.value);
   changeLevel(1);
 
   rerenderKey.rerender();
@@ -75,10 +76,10 @@ function deleteLevel() {
     return;
   }
 
-  const index = characterModel.value.currentLevelIndex;
+  const index = levelOwnerModel.value.currentLevelIndex;
   const delta = isLast.value ? -1 : 0;
   changeLevel(delta);
-  characterModel.value.levels.splice(index, 1);
+  levelOwnerModel.value.levels.splice(index, 1);
   updateLevel();
 }
 </script>
@@ -92,6 +93,11 @@ function deleteLevel() {
           v-model="name"
           @input="validate"
       />
+      <input
+          type="button"
+          :value="showMore ? '≢' : '≡'"
+          @click="showMore = !showMore"
+      />
     </div>
 
     <div class="character-page-level-row character-level-selector">
@@ -104,10 +110,10 @@ function deleteLevel() {
       <input
           type="range"
           min="0"
-          :max="characterModel.levels.length - 1"
+          :max="levelOwnerModel.levels.length - 1"
           v-model="inputIndex"
           class="slider"
-          :disabled="characterModel.levels.length <= 1"
+          :disabled="levelOwnerModel.levels.length <= 1"
           @input="onSliderInput"
       />
       <input
@@ -118,7 +124,7 @@ function deleteLevel() {
       />
     </div>
 
-    <div class="character-page-level-row character-level-menu">
+    <div class="character-page-level-row character-level-menu" v-if="showMore">
       <input
           type="button"
           value="Create level"
@@ -132,7 +138,7 @@ function deleteLevel() {
       />
     </div>
 
-    <div class="character-page-level-row character-level-menu">
+    <div class="character-page-level-row character-level-menu" v-if="showMore">
       <input
           type="button"
           value="< Move level"

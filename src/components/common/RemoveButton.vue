@@ -6,7 +6,6 @@ defineEmits<{
 
 <template>
   <input
-      class="settings-card-block settings-card-remove"
       type="button"
       value="-"
       @click="$emit('remove')"

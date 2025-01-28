@@ -8,37 +8,38 @@ import {computed, ref} from "vue";
 import {getDisplayName} from "../utils.ts";
 import CharacterEquipmentPopupStatItem
   from "@/components/characters/characterPage/equipment/CharacterEquipmentPopupStatItem.vue";
+import {hasValue, type Optional} from "@/utils/optional.ts";
 
 const props = defineProps<{
   isOpen: boolean;
   typeId: EquipmentTypeId
-  equipped: EquipmentId | null,
+  equipped: Optional<EquipmentId>,
 }>();
 
 const emit = defineEmits<{
   (name: "close"): void;
-  (name: "selectEquipment", equipment: Equipment | null): void;
+  (name: "selectEquipment", equipment: Optional<Equipment>): void;
 }>();
 
-const selected = ref<Equipment | null>(null);
-const equipped = computed<Equipment | null>(() => {
+const selected = ref<Optional<Equipment>>(null);
+const equipped = computed<Optional<Equipment>>(() => {
   if (!props.isOpen) {
     return null;
   }
 
-  const e = props.equipped === null ? null : model.getEquipment(props.equipped)!;
+  const e = !hasValue(props.equipped) ? null : model.getEquipment(props.equipped)!;
   selected.value = e;
   return e;
 })
 
-const equipmentList = computed<(Equipment | null)[]>(() => {
+const equipmentList = computed<Optional<Equipment>[]>(() => {
   if (!props.isOpen) {
     return [];
   }
 
-  const filtered = model.data.equipment.filter(e => e.typeId === props.typeId);
-  const full = [null].concat(filtered);
-  if (props.equipped === null) {
+  const filtered: Equipment[] = model.data.equipment.filter(e => e.typeId === props.typeId);
+  const full: Optional<Equipment>[] = [null].concat(filtered);
+  if (!hasValue(props.equipped)) {
     return full;
   }
 
@@ -50,11 +51,11 @@ const equipmentList = computed<(Equipment | null)[]>(() => {
 
 const selectedStats = computed<StatId[]>(() => {
   let result: StatId[] = [];
-  if (equipped.value !== null) {
+  if (hasValue(equipped.value)) {
     result = result.concat(equipped.value.stats.map(stat => stat.statId));
   }
 
-  if (selected.value !== null && selected.value !== equipped.value) {
+  if (hasValue(selected.value) && selected.value !== equipped.value) {
     result = result.concat(selected.value.stats
         .map(stat => stat.statId)
         .filter(statId => !result.includes(statId)))
@@ -63,7 +64,7 @@ const selectedStats = computed<StatId[]>(() => {
   return result;
 });
 
-function onSelectEquipment(equipment: Equipment | null) {
+function onSelectEquipment(equipment: Optional<Equipment>) {
   selected.value = equipment;
 }
 

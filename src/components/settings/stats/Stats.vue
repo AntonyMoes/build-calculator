@@ -12,13 +12,14 @@ function add() {
   model.data.stats.push({
     id: model.createId(),
     name: newName,
+    shownCharacterStat: false,
     minValue: undefined,
     maxValue: undefined,
   })
 }
 
 function remove(value: string) {
-  const index = model.data.stats.indexOf(model.data.stats.find(stat => stat.name === value)!);
+  const index = model.data.stats.findIndex(stat => stat.name === value);
   if (index > -1) {
     model.data.stats.splice(index, 1);
   }

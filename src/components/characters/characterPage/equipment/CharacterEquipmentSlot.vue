@@ -3,10 +3,11 @@ import type {EquipmentId, EquipmentType} from "@/model/modelData.ts";
 import {computed} from "vue";
 import SelectedImage from "@/components/common/SelectedImage.vue";
 import {model} from "@/model/model.ts";
+import {hasValue, type Optional} from "@/utils/optional.ts";
 
 const props = defineProps<{
   type: EquipmentType,
-  equipmentArray: (EquipmentId | null)[],
+  equipmentArray: Optional<EquipmentId>[],
   index: number
 }>();
 
@@ -14,7 +15,7 @@ const emit = defineEmits<{
   (name: "clickSlot", index: number): void;
 }>();
 
-const equipmentId = computed<EquipmentId | null>(() => props.equipmentArray[props.index]);
+const equipmentId = computed<Optional<EquipmentId>>(() => props.equipmentArray[props.index]);
 
 function onClick() {
   emit("clickSlot", props.index);
@@ -24,7 +25,7 @@ function onClick() {
 <template>
   <SelectedImage
       class="character-equipment-slot"
-      :src="equipmentId === null ? '/src/assets/none.svg' : model.getEquipment(equipmentId)!.imageSrc"
+      :src="!hasValue(equipmentId) ? '/src/assets/none.svg' : model.getEquipment(equipmentId)!.imageSrc"
       alt="Whatever"
       @click="onClick"
   />

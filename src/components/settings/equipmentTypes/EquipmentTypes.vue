@@ -16,7 +16,7 @@ function add() {
 }
 
 function remove(value: string) {
-  const index = model.data.equipmentTypes.indexOf(model.data.equipmentTypes.find(type => type.name === value)!);
+  const index = model.data.equipmentTypes.findIndex(type => type.name === value);
   if (index > -1) {
     model.data.equipmentTypes.splice(index, 1);
   }

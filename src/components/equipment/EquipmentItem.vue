@@ -98,7 +98,7 @@ async function onImageSelected(image: File) {
         @remove="removeStat"
     />
 
-    <input type="button" value="Add" v-on:click="addStat">
+    <input type="button" value="Add stat" v-on:click="addStat">
   </div>
 </template>
 

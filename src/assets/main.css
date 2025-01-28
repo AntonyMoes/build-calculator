@@ -3,6 +3,7 @@
 /* variables */
 :root {
     --nav-sidebar-width: 120px;
+    --character-list-width: 120px;
 }
 
 *,

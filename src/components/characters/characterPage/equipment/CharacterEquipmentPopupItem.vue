@@ -3,15 +3,16 @@ import SelectedImage from "@/components/common/SelectedImage.vue";
 import type {Equipment} from "@/model/modelData.ts";
 import {computed} from "vue";
 import {getDisplayName} from "@/components/characters/characterPage/utils.ts";
+import type {Optional} from "@/utils/optional.ts";
 
 const props = defineProps<{
-  equipment: Equipment | null;
+  equipment: Optional<Equipment>;
   equipped: boolean;
   selected: boolean;
 }>();
 
 defineEmits<{
-  (name: "selectEquipment", equipment: Equipment | null): void;
+  (name: "selectEquipment", equipment: Optional<Equipment>): void;
 }>();
 
 const displayName = getDisplayName(props.equipment);

@@ -1,26 +1,29 @@
 <script setup lang="ts">
-import {type CharacterEquipmentGroup, type EquipmentId} from "@/model/modelData.ts";
+import {type CharacterEquipmentGroup, type CharacterEquipmentGroupId, type EquipmentId} from "@/model/modelData.ts";
 import {model} from "@/model/model.ts";
 import CharacterEquipmentSlot from "@/components/characters/characterPage/equipment/CharacterEquipmentSlot.vue";
 import {computed, ref} from "vue";
+import {hasValue, type Optional} from "@/utils/optional.ts";
+import RemoveButton from "@/components/common/RemoveButton.vue";
 
 const emit = defineEmits<{
   (name: "selectSlot", group: CharacterEquipmentGroup, slotIndex: number): void;
+  (name: "remove", id: CharacterEquipmentGroupId): void;
 }>();
 
 const groupModel = defineModel<CharacterEquipmentGroup>({required: true});
 const selectedGroup = ref(model.getEquipmentGroup(groupModel.value.groupId)!);
 const selectedGroupName = ref(selectedGroup.value.name);
 const equipmentTypes = computed(() => selectedGroup.value.equipmentTypeIds.map(id => model.getEquipmentType(id)!));
-const equipment = computed<(EquipmentId | null)[]>(() => {
+const equipment = computed<Optional<EquipmentId>[]>(() => {
   for (let i = 0; i < equipmentTypes.value.length; i += 1) {
     if (groupModel.value.equipment.length <= i) {
       groupModel.value.equipment.push(null);
       continue;
     }
 
-    const equipmentId: EquipmentId | null = groupModel.value.equipment[i];
-    if (equipmentId === null) {
+    const equipmentId: Optional<EquipmentId> = groupModel.value.equipment[i];
+    if (!hasValue(equipmentId)) {
       continue;
     }
 
@@ -59,6 +62,7 @@ function onClickSlot(index: number) {
       {{ group.name }}
     </option>
   </select>
+  <RemoveButton class="settings-card-block" @remove="$emit('remove', groupModel.id)"/>
 
   <div class="character-equipment-group-slots">
     <CharacterEquipmentSlot

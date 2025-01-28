@@ -26,13 +26,13 @@ function validate() {
  <div class="character-page-stat">
    <label
        class="character-page-stat-name"
-       :for="stat.id"
+       :for="stat.id.toString()"
    >
      {{ stat.name }}
    </label>
    <input
        class="character-page-stat-input"
-       :id="stat.id"
+       :id="stat.id.toString()"
        v-model.number="value"
        @input="validate"
    >

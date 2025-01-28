@@ -18,7 +18,7 @@ function add() {
 }
 
 function remove(value: string) {
-  const index = model.data.targetStats.indexOf(model.data.targetStats.find(stat => stat.name === value)!);
+  const index = model.data.targetStats.findIndex(stat => stat.name === value);
   if (index > -1) {
     model.data.targetStats.splice(index, 1);
   }

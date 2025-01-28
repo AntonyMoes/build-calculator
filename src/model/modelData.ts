@@ -1,12 +1,14 @@
 import type {TreeToken} from "@/calculator/types.ts";
+import type {Optional} from "@/utils/optional.ts";
 
 export type StatId = number;
 
 export interface Stat {
     id: StatId;
     name: string;
-    minValue: number | undefined;
-    maxValue: number | undefined;
+    shownCharacterStat: boolean;
+    minValue: Optional<number>;
+    maxValue: Optional<number>;
 }
 
 export interface TargetStat {
@@ -46,7 +48,7 @@ export type CharacterEquipmentGroupId = number;
 export interface CharacterEquipmentGroup {
     id: CharacterEquipmentGroupId;
     groupId: EquipmentGroupId;
-    equipment: (EquipmentId | null)[];
+    equipment: Optional<EquipmentId>[];
 }
 
 export type StatValueId = number;
@@ -65,6 +67,15 @@ export interface CharacterStatLevel {
     stats: StatValue[];
 }
 
+export type CharacterStatGroupId = number;
+
+export interface CharacterStatGroup {
+    id: CharacterStatGroupId;
+    name: string;
+    currentLevelIndex: number;
+    levels: CharacterStatLevel[];
+}
+
 export type CharacterId = number;
 
 export interface Character {
@@ -74,6 +85,7 @@ export interface Character {
     currentLevelIndex: number;
     levels: CharacterStatLevel[];
     equipment: CharacterEquipmentGroup[];
+    statGroups: CharacterStatGroup[];
 }
 
 export interface ModelData {

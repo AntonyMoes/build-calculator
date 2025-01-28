@@ -8,6 +8,7 @@ import {getRerenderKey} from "@/utils/rerenderKey.ts";
 import EquipmentTypes from "@/components/settings/equipmentTypes/EquipmentTypes.vue";
 import EquipmentGroups from "@/components/settings/equipmentGroups/EquipmentGroups.vue";
 import type {ModelData} from "@/model/modelData.ts";
+import {validateAndFixModelData} from "@/model/validation.ts";
 
 const rerenderKey = getRerenderKey();
 
@@ -28,8 +29,13 @@ async function onLoadFileSelected() {
   loadInput.value!.files = emptyInput.value!.files;
   const text = await file.text();
 
-  // TODO parse and validate
   const result = JSON.parse(text) as ModelData;
+  const errors = validateAndFixModelData(result);
+  if (errors.length !== 0) {
+    alert(errors.join("\n"));
+    return;
+  }
+
   model.setData(result);
   rerenderKey.rerender();
 }

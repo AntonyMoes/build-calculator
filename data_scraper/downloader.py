@@ -12,7 +12,7 @@ from aiohttp import ClientResponse
 from aiohttp.client import ClientSession, TCPConnector, _BaseRequestContextManager
 
 from data_scraper.character_data import Model, Character
-from data_scraper.parser import Parser, HSRParser
+from data_scraper.parsing import Parser, HSRParser
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
@@ -50,6 +50,9 @@ async def parse_resource(parser: Parser, path_str: str, session: ClientSession) 
 
     model = Model()
     model.stats = parser.generate_stats(model)
+    model.targetStats = parser.generate_target_stats(model)
+    model.equipmentTypes = parser.generate_equipment_types(model)
+    model.equipmentGroups = parser.generate_equipment_groups(model)
     model.characters = await asyncio.gather(
         *[parse_character(parser, path_str, session, model, data.additional_data, data.urls)
           for data in character_urls])

@@ -42,12 +42,14 @@ function onNewCharacterClick() {
 
 <style scoped>
 .characters {
-  display: flex;
-  gap: 40px;
-  height: 100vh;
+  width: 100%;
+  min-height: 100vh;
 }
 
 .character-list {
+  position: fixed;
+  height: 100vh;
+  width: var(--character-list-width);
   display: flex;
   gap: 10px;
   flex-direction: column;
@@ -57,5 +59,6 @@ function onNewCharacterClick() {
 
 .character-section {
   display: flex;
+  margin-left: calc(var(--character-list-width) + 50px);
 }
 </style>

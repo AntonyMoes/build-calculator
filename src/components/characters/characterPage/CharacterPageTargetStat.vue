@@ -16,7 +16,7 @@ defineEmits<{
   (name: "toggleStat", stat: TargetStat, calculationTree: DifferentiationTree, variables: ComputedRef<Map<string, number>>): void;
 }>();
 
-const treeMap = computed(() => getTargetStatCalculation(model, props.targetStat, props.character, model.getCurrentCharacterLevel(props.character)));
+const treeMap = computed(() => getTargetStatCalculation(model, props.targetStat, props.character, model.getCurrentLevel(props.character)));
 const value = computed(() => formatValue(treeMap.value[0].calculate(treeMap.value[1].value)));
 </script>
 
