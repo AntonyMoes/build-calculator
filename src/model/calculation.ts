@@ -1,16 +1,10 @@
-import {
-    type Character,
-    type CharacterStatLevel,
-    type Stat,
-    type StatValue,
-    type TargetStat
-} from "@/model/modelData.ts";
+import {type Character, type Stat, type StatValue, type TargetStat} from "@/model/modelData.ts";
 import {DifferentiationTree} from "@/calculator/differentiationTree.ts";
 import {computed, type ComputedRef} from "vue";
 import type {Model} from "@/model/model.ts";
 import {hasValue} from "@/utils/optional.ts";
 
-export function getTargetStatCalculation(model: Model, targetStat: TargetStat, character: Character, characterLevel: CharacterStatLevel): [DifferentiationTree, ComputedRef<Map<string, number>>] {
+export function getTargetStatCalculation(model: Model, targetStat: TargetStat, character: Character): [DifferentiationTree, ComputedRef<Map<string, number>>] {
     const tree = new DifferentiationTree(targetStat.tokenization);
 
     const variableMap = computed(() => {
@@ -27,7 +21,7 @@ export function getTargetStatCalculation(model: Model, targetStat: TargetStat, c
                 value: model.getDefaultStatValue(stat)
             };
 
-            const characterStat = characterLevel.stats.find(s => s.statId === statValue.statId)!;
+            const characterStat = model.getCurrentLevel(character).stats.find(s => s.statId === statValue.statId)!;
             aggregateStatValue(model, statValue, characterStat);
 
             for (const group of character.equipment) {
@@ -41,6 +35,13 @@ export function getTargetStatCalculation(model: Model, targetStat: TargetStat, c
                     if (equipmentStat !== undefined) {
                         aggregateStatValue(model, statValue, equipmentStat);
                     }
+                }
+            }
+
+            for (const group of character.statGroups) {
+                const groupStat = model.getCurrentLevel(group).stats.find(s => s.statId === statValue.statId);
+                if (groupStat !== undefined) {
+                    aggregateStatValue(model, statValue, groupStat);
                 }
             }
 

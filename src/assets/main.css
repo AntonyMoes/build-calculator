@@ -4,6 +4,7 @@
 :root {
     --nav-sidebar-width: 120px;
     --character-list-width: 120px;
+    --page-container-padding: 20px;
 }
 
 *,
@@ -37,5 +38,5 @@ input.disabled {
 }
 
 .page-container {
-    padding: 20px;
+    padding: var(--page-container-padding);
 }

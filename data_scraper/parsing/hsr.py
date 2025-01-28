@@ -6,7 +6,7 @@ from urllib import parse
 from selectolax.parser import HTMLParser, Node
 
 from data_scraper.character_data import Character, Stat, Model, StatValue, CharacterStatLevel, TargetStat, \
-    EquipmentType, EquipmentGroup, CharacterEquipmentGroup
+    EquipmentType, EquipmentGroup, CharacterEquipmentGroup, CharacterStatGroup
 from data_scraper.parsing import Parser, CharacterUrlData, CharacterParseResult
 from data_scraper.parsing.parser import AdditionalCharacterDataType
 
@@ -72,6 +72,7 @@ class HSRParser(Parser):
 
     __image_regex = re.compile(r"(.*\.([a-zA-Z0-9])+)")
     __level_regex = re.compile(r"(\d+)/(\d+)")
+    __trace_regex = re.compile(r".*?([a-zA-Z]+( [a-zA-Z]+)?) increases by ([0-9]+(.[0-9]+))(%?).*")
 
     @property
     def character_list_url(self) -> str:
@@ -131,8 +132,12 @@ class HSRParser(Parser):
         image_src = self._parse_image_src(page_parser, combat_page_parser, image_from_combat_page)
         levels = self._parse_stat_levels(model, combat_page_parser)
         equipment_groups = [CharacterEquipmentGroup(model.create_id(), model.equipmentGroups[0].id)]
+        stat_groups = self._parse_stat_groups(model, combat_page_parser)
 
-        return CharacterParseResult(Character(model.create_id(), name, levels, equipment_groups), image_src)
+        return CharacterParseResult(
+            Character(model.create_id(), name, levels, equipment_groups, stat_groups),
+            image_src
+        )
 
     def _parse_image_src(self, page_parser: HTMLParser, combat_page_parser: HTMLParser, from_combat_page: bool) -> str:
         image_page_parser = combat_page_parser if from_combat_page else page_parser
@@ -173,3 +178,67 @@ class HSRParser(Parser):
             return CharacterStatLevel(model.create_id(), level_name, stats)
 
         return [parse_sub_row(row[0], True), parse_sub_row(row[1], False)]
+
+    def _parse_stat_groups(self, model: Model, combat_page_parser: HTMLParser) -> list[CharacterStatGroup]:
+        traces_id = "Traces"
+        nodes = [n for n in combat_page_parser.css_first("#" + traces_id).parent.parent.iter()]
+
+        table: Node | None = None
+        found_traces = False
+        for node in nodes:
+            if node.child is not None and node.child.id == traces_id:
+                found_traces = True
+
+            if node.tag == "table" and found_traces:
+                table = node
+                break
+
+        if table is None:
+            return []
+
+        return list(
+            filter(lambda trace: trace is not None, [self._parse_trace(model, trace) for trace in table.css("td")]))
+
+    def _parse_trace(self, model: Model, trace: Node) -> CharacterStatGroup | None:
+        trace_name = "Trace - " + trace.css_first("b").text()
+        trace_text = trace.text(deep=False)
+
+        result = self.__trace_regex.match(trace_text)
+        if result is None:
+            return None
+
+        possible_stat_name = result.groups()[0]
+        stat_value = float(result.groups()[2])
+        boost = len(result.groups()[4]) > 0
+
+        possible_stat_name = (possible_stat_name
+                              .lower()
+                              .replace("max", "")
+                              .replace(" ", ""))
+
+        def compare_stat_names(stat: str, possible_stat: str) -> bool:
+            stat_lower = stat.lower()
+            if stat_lower == possible_stat:
+                return True
+
+            if boost:
+                possible_stat += "boost"
+            else:
+                possible_stat = "bonus" + possible_stat
+
+            return stat_lower == possible_stat
+
+        stat_name = next((stat for stat in self.STATS.keys() if compare_stat_names(stat, possible_stat_name)), None)
+        if stat_name is None:
+            return None
+
+        stat = model.get_stat(stat_name)
+
+        def create_stat_values(value: float = 0) -> list[StatValue]:
+            return [StatValue(model.create_id(), stat.id, value)]
+
+        levels = [
+            CharacterStatLevel(model.create_id(), "0", create_stat_values()),
+            CharacterStatLevel(model.create_id(), "1", create_stat_values(stat_value)),
+        ]
+        return CharacterStatGroup(model.create_id(), trace_name, levels)

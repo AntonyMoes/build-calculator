@@ -261,6 +261,9 @@ function removeStatGroup(groupId: CharacterStatGroupId) {
   min-height: 200px;
   background-color: black;
   padding: 30px;
+  max-height: calc(100vh - var(--page-container-padding) * 2);
+  overflow-y: scroll;
+  scrollbar-width: none;
 }
 
 .character-page-top {
